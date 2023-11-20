@@ -23,7 +23,7 @@ struct Student
 //int _input_to_int(int input);
 
 void add_recoid();
-void list_students();
+void list_students(const std::string table_title = "MENU 2 | Danh sach sinh vien");
 void sort_students();
 void search_students();
 void statistics_studnet();
@@ -67,6 +67,7 @@ int main()
             sort_students();
             break;
         case '4':
+            search_students();
             break;
         case '5':
             break;
@@ -117,10 +118,10 @@ void add_recoid()
 
 }
 
-void list_students()
+void list_students(const std::string table_title)
 {
     char return_to_main{};
-    std::cout << "\n-***   ***   ***   ***   ***    MENU 2 | Danh sach sinh vien    ***   ***   ***   ***   ***-";
+    std::cout << "\n-***   ***   ***   ***   ***    " << table_title << "    ***   ***   ***   ***   ***-";
     std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
     std::cout << "\n-| STT |  ma lop  | ma sinh vien |        ho va ten        | ngay sinh  | diem trung bing |-";
     std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
@@ -203,10 +204,41 @@ void sort_students()
     };
 
 
-    list_students();
+    list_students(" MENU  | Danh sach sinh vien");
 
 }
-void search_students();
+void search_students()
+{
+    char searched_column;
+    std::cout << "\n*** MENU $ | Tim kien sinh vien ***";
+
+    std::cout << "\n\n Lua chon truong tim kiem:";
+    std::cout << "\n(1) - ma lop";
+    std::cout << "\n(2) - ma sinh vien";
+    std::cout << "\n(3) - ho va ten";
+    std::cout << "\n(4) - ngay sinh";
+    std::cout << "\n(5) - diem trung binh";
+
+    while (true)
+    {
+        std::cout << "(Chon truong tim kiem (1) - (4)";
+        std::cout << "\n>";
+        searched_column = _getch();
+        switch (searched_column)
+        {
+        case '1':
+        case '2':
+        case '3':
+            std::cout << searched_column;
+            break;
+        default:
+            continue;
+        }
+        break;
+    };
+
+    list_students("MENU   | Ket qua tim kiem   ");
+}
 void statistics_studnet();
 
 
