@@ -20,6 +20,8 @@ struct Student
 
 };
 
+//int _input_to_int(int input);
+
 void add_recoid();
 void list_students();
 void sort_students();
@@ -40,15 +42,15 @@ int main()
         std::cout << "\n-|----------------------------|-";
 
         std::cout << "\n";
-        std::cout << "\n1. Them moi ho so";
-        std::cout << "\n2. In danh sach";
-        std::cout << "\n3. Sap xep";
-        std::cout << "\n4. Tim kiem";
-        std::cout << "\n5. Thong ke";
-        std::cout << "\n6. Thoat";
+        std::cout << "\n(1) - Them moi ho so";
+        std::cout << "\n(2) - In danh sach";
+        std::cout << "\n(3) - Sap xep";
+        std::cout << "\n(4) - Tim kiem";
+        std::cout << "\n(5) - Thong ke";
+        std::cout << "\n(6) - Thoat";
 
-        std::cout << "\n(Chon chuc nang 1 - 6)";
-        std::cout << "\n> ";
+        std::cout << "\n(Chon chuc nang (1) - (6))";
+        std::cout << "\n>";
         std::cin >> user_choice;
 
 ;       switch (user_choice)
@@ -62,6 +64,7 @@ int main()
             list_students();
             break;
         case '3':
+            sort_students();
             break;
         case '4':
             break;
@@ -81,7 +84,7 @@ void add_recoid()
     char user_confirm = 'y';
 
     std::cin.ignore();
-    std::cout << "\n** MENU 1 | Nhap thong tin sinh vien **";
+    std::cout << "\n*** MENU 1 | Nhap thong tin sinh vien ***";
     std::cout << "\n";
     std::cout << "\n  ma lop: ";
     std::cout << "AAA17\n";
@@ -109,14 +112,6 @@ void add_recoid()
     std::cout << "\n\nXac nhap thong tin sinh vien da nhap (y / n): ";
     user_confirm = _getch();
 
-    if (user_confirm == 'y')
-    {
-       
-    }
-    else if (user_confirm == 'n')
-    {
-        return;
-    }
     //std::cout << s.class_id << " " << s.student_id << " " << s.name << " " << s.dob.day << " " << s.gpa << "\n";
     
 
@@ -141,7 +136,77 @@ void list_students()
 }
 
 
-void sort_students();
+void sort_students()
+{
+    char algo_choice;
+    char column_choice;
+
+    std::cout << "\n*** MENU 3 | Sap xep danh sach sinh vien ***";
+    std::cout << "\n\nLua chon thuat toan sap xep:";
+    std::cout << "\n(1) - Sap xep chon";
+    std::cout << "\n(2) - Sap xep chen";
+    std::cout << "\n(3) - Sap xep noi bot";
+    std::cout << "\n(4) - quicksort";
+    std::cout << "\n(5) - mergesort";
+    std::cout << "\n(0) - Quay lai Menu\n";
+
+    std::cin.ignore();
+    while(true)
+    {
+        std::cout << "(Chon thuat toan (1) - (5))";
+        std::cout << "\n>";
+        algo_choice = _getch();
+        
+        switch (algo_choice)
+        {
+        case '0':
+            return;
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+            std::cout << algo_choice;
+            break;
+        default:
+            std::cout << "\n";
+            continue;
+        }
+        
+        break;
+    }
+    
+
+    std::cout << "\nChon truong sao xep:";
+    std::cout << "\n(1) - ma sinh vien";
+    std::cout << "\n(2) - hoc va ten";
+    std::cout << "\n(3) - ngay sinh";
+    std::cout << "\n(4) - diem trung bing\n";
+
+    
+    while(true)
+    {
+        std::cout << "(Chon truong sap xep (1) - (4)";
+        std::cout << "\n>";
+        column_choice = _getch();
+        switch (column_choice)
+        {
+        case '1':
+        case '2':
+        case '3':
+            std::cout << column_choice;
+            break;
+        default:
+            continue;
+        }
+        break;
+    };
+
+
+    list_students();
+
+}
 void search_students();
 void statistics_studnet();
+
 
