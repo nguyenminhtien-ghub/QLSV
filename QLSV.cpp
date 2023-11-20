@@ -54,7 +54,7 @@ int main()
         std::cout << "\n>";
         std::cin >> user_choice;
 
-;       switch (user_choice)
+        switch (user_choice)
         {
         case '6':
             return 0;
