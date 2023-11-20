@@ -20,13 +20,14 @@ struct Student
 
 };
 
-//int _input_to_int(int input);
 
 void add_recoid();
 void list_students(const std::string table_title = "MENU 2 | Danh sach sinh vien");
 void sort_students();
 void search_students();
-void statistics_studnet();
+void statistics_student();
+void _statistics_quantity_by_class();
+void _statistics_rank_students();
 
 
 int main()
@@ -70,6 +71,7 @@ int main()
             search_students();
             break;
         case '5':
+            statistics_student();
             break;
         default:
             std::cout << "\nNhap so tu 1 den 6\n";
@@ -120,7 +122,7 @@ void add_recoid()
 
 void list_students(const std::string table_title)
 {
-    char return_to_main{};
+    char return_to_main;
     std::cout << "\n-***   ***   ***   ***   ***    " << table_title << "    ***   ***   ***   ***   ***-";
     std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
     std::cout << "\n-| STT |  ma lop  | ma sinh vien |        ho va ten        | ngay sinh  | diem trung bing |-";
@@ -210,7 +212,7 @@ void sort_students()
 void search_students()
 {
     char searched_column;
-    std::cout << "\n*** MENU $ | Tim kien sinh vien ***";
+    std::cout << "\n*** MENU 4 | Tim kien sinh vien ***";
 
     std::cout << "\n\n Lua chon truong tim kiem:";
     std::cout << "\n(1) - ma lop";
@@ -239,6 +241,71 @@ void search_students()
 
     list_students("MENU   | Ket qua tim kiem   ");
 }
-void statistics_studnet();
+void statistics_student()
+{
+    char user_choice;
+
+    std::cout << "\n*** MENU 5 | Thong ke thong tin ***";
+    std::cout << "\n\n(1) - Thong ke so luong sinh vien theo lop";
+    std::cout << "\n(2) - Thong ke ty le ket qua hoc tap";
+    std::cout << "\n>";
+    user_choice = _getch();
+    
+    if (user_choice == '1')
+    {
+        std::cout << user_choice;
+        _statistics_quantity_by_class();
+        return;
+    }
+
+    if (user_choice == '2')
+    {
+        std::cout << user_choice;
+        _statistics_rank_students();
+
+        return;
+    }
+}
+
+void _statistics_quantity_by_class()
+{
+    char return_to_main;
+    std::cout << "\n\n  * Thong ke so luong sinh vien theo lop *  ";
+    std::cout << "\n    -|--------|--------------------|-";
+    std::cout << "\n     | ma lop | so luong sinh vien |";
+    std::cout << "\n     |  AAA17 |                 60 |";
+    std::cout << "\n     |  ABB17 |                 74 |";
+    std::cout << "\n     |  ABB17 |                 60 |";
+    std::cout << "\n     |  ABB17 |                 77 |";
+    std::cout << "\n    -|--------|--------------------|-";
+    std::cout << "\n    -|  TONG  |                271 |-";
+    std::cout << "\n    -|--------|--------------------|-";
+    std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
+    return_to_main = _getch();
+}
+
+void _statistics_rank_students()
+{
+    char return_to_main;
+    std::cout << "\n\n                           * Thong ke ket qua hoc tap *  ";
+    std::cout << "\n    -|--------|------------|------------|------------|------------|------------|-";
+    std::cout << "\n     |        |  xuat sac  |    gioi    |    kha     | trung binh |    yeu     |";
+    std::cout << "\n     | ma lop |------------|------------|------------|------------|------------|";
+    std::cout << "\n     |        |  SL | (%)  |  SL | (%)  |  SL | (%)  |  SL | (%)  |  SL | (%)  |";
+    std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
+    std::cout << "\n     |  AAA17 |   5 |    8 |  11 |   18 |  24 |   40 |  17 |   28 |   3 |    5 |";
+    std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
+    std::cout << "\n     |  AAA17 |   7 |    9 |   9 |   12 |  30 |   41 |  21 |   28 |   7 |    9 |";
+    std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
+    std::cout << "\n     |  AAA17 |   3 |    5 |  12 |   20 |  21 |   35 |  19 |   32 |   5 |    8 |";
+    std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
+    std::cout << "\n     |  AAA17 |   6 |    8 |  15 |   19 |  29 |   29 |  22 |   29 |   5 |    6 |";
+    std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
+    std::cout << "\n     |  TONG  |  21 |    8 |  47 |   17 | 104 |   38 |  79 |   29 |  20 |    7 |";
+    std::cout << "\n    -|-------------------------------------------------------------------------|-";
+
+    std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
+    return_to_main = _getch();
+}
 
 
