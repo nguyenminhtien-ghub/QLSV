@@ -1,6 +1,7 @@
 #include <conio.h>
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <array>
 
@@ -148,10 +149,10 @@ void add_recoid()
 
 void list_students(const std::string table_title)
 {
-    std::array<Student, 10> s_list;
+    std::array<Student, 1> s_list;
     std::ifstream data_file("student.dat", std::ios::binary);
     char return_to_main;
-    data_file.read(reinterpret_cast<char*>(&s_list), sizeof(Student) * 10);
+    data_file.read(reinterpret_cast<char*>(&s_list), sizeof(Student) * 1);
     std::cout << "\n-***   ***   ***   ***   ***    " << table_title << "    ***   ***   ***   ***   ***-";
     std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
     std::cout << "\n-| STT |  ma lop  | ma sinh vien |        ho va ten        | ngay sinh  | diem trung bing |-";
@@ -159,7 +160,14 @@ void list_students(const std::string table_title)
     
     for (int i = 0; i < s_list.size(); i++)
     {
-        _print_single_student(i, s_list[i].class_id, s_list[i].student_id, s_list[i].name, s_list[i].dob.day, s_list[i].dob.month, s_list[i].dob.year, s_list[i].gpa);
+        _print_single_student(i,
+            s_list[i].class_id,
+            s_list[i].student_id,
+            s_list[i].name,
+            s_list[i].dob.day,
+            s_list[i].dob.month,
+            s_list[i].dob.year,
+            s_list[i].gpa);
     }
     
 
@@ -355,7 +363,7 @@ bool _validate_date(const int input_day, const int input_month, const int input_
 
 bool _validate_year(const int year)
 {
-    return year < 2000 && year > 1980;
+    return year < 2016 && year > 1900;
 }
 
 bool _validate_month(const int month)
@@ -413,7 +421,21 @@ bool _validate_gpa(const float input_gpa)
 
 void _print_single_student(const int i, const std::string class_id, const std::string student_id, const std::string name, const int dob_day, const int dob_month, const int dob_year, const float gpa)
 {
-    std::cout << "\n |" << i << " |    " << class_id << " |     " << student_id << " |    " << name << "        |  " << dob_day << " " << dob_month << " " << dob_year << " |               " << gpa << " |-";
+    if (i < 10)
+    {
+        std::cout << "\n | 00";
+
+    }
+    else if (i < 10)
+    {
+        std::cout << "\n | 0";
+    }
+    std::cout << i + 1;
+    std::cout << " | " << std::setw(8) << std::right << class_id;
+    std::cout << " | " << std::setw(12) << std::right << student_id;
+    std::cout << " | " << std::setw(23) << name;
+    std::cout << " | " << std::setw(3) << dob_day << "/" << dob_month << "/" << dob_year;
+    std::cout << " | " << std::setw(15) << std::right << gpa << " |";
 }
 
 
