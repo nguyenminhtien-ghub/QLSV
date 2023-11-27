@@ -31,7 +31,9 @@ bool _validate_month(const int month);
 bool _validate_day(const int day, const int month, const int years);
 bool _validate_gpa(const float input_gpa);
 void list_students(const std::string table_title = "MENU 2 | Danh sach sinh vien");
+void _print_single_student(const int i, const std::string class_id, const std::string student_id, const std::string name, const int dob_day, const int dob_month, const int dob_year, const float gpa);
 void sort_students();
+
 void search_students();
 void statistics_student();
 void _statistics_quantity_by_class();
@@ -146,17 +148,20 @@ void add_recoid()
 
 void list_students(const std::string table_title)
 {
-    Student s;
+    std::array<Student, 10> s_list;
     std::ifstream data_file("student.dat", std::ios::binary);
     char return_to_main;
-    data_file.read(reinterpret_cast<char*>(&s), sizeof(s));
+    data_file.read(reinterpret_cast<char*>(&s_list), sizeof(Student) * 10);
     std::cout << "\n-***   ***   ***   ***   ***    " << table_title << "    ***   ***   ***   ***   ***-";
     std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
     std::cout << "\n-| STT |  ma lop  | ma sinh vien |        ho va ten        | ngay sinh  | diem trung bing |-";
     std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
-    std::cout << "\n | 000 |    " << s.class_id << " |     " << s.student_id << " |    " << s.name << "        |  " << s.dob.day << " " << s.dob.month << " " << s.dob.year << " |               " << s.gpa << " |-";
-
-
+    
+    for (int i = 0; i < s_list.size(); i++)
+    {
+        _print_single_student(i, s_list[i].class_id, s_list[i].student_id, s_list[i].name, s_list[i].dob.day, s_list[i].dob.month, s_list[i].dob.year, s_list[i].gpa);
+    }
+    
 
     std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
 
@@ -404,6 +409,11 @@ bool _is_leap_year(const int year)
 bool _validate_gpa(const float input_gpa)
 {
     return input_gpa >= 0.0f && input_gpa <= 10.0f;
+}
+
+void _print_single_student(const int i, const std::string class_id, const std::string student_id, const std::string name, const int dob_day, const int dob_month, const int dob_year, const float gpa)
+{
+    std::cout << "\n |" << i << " |    " << class_id << " |     " << student_id << " |    " << name << "        |  " << dob_day << " " << dob_month << " " << dob_year << " |               " << gpa << " |-";
 }
 
 
