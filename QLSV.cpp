@@ -1,4 +1,5 @@
 #include <conio.h>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <array>
@@ -22,6 +23,13 @@ struct Student
 
 
 void add_recoid();
+bool _validate_student_id(const std::string id);
+bool _validate_date(const int input_day,const int input_month,const int input_year);
+bool _validate_year(const int year);
+bool _is_leap_year(const int year);
+bool _validate_month(const int month);
+bool _validate_day(const int day, const int month, const int years);
+bool _validate_gpa(const float input_gpa);
 void list_students(const std::string table_title = "MENU 2 | Danh sach sinh vien");
 void sort_students();
 void search_students();
@@ -83,6 +91,14 @@ int main()
 
 void add_recoid()
 {
+    std::ofstream data_file("student.dat", std::ios::binary | std::ios::app);
+
+    if (!data_file)
+    {
+        std::cerr << "Loi mo file danh sach siinh vien";
+        return;
+    }
+
     Student s;
     char user_confirm = 'y';
 
@@ -90,50 +106,62 @@ void add_recoid()
     std::cout << "\n*** MENU 1 | Nhap thong tin sinh vien ***";
     std::cout << "\n";
     std::cout << "\n  ma lop: ";
-    std::cout << "AAA17\n";
-    //std::getline(std::cin, s.class_id);
-    s.class_id = "AAA17";
-    std::cout << "  ma sinh vien: ";
-    std::cout << "12345678\n";
-    //std::getline(std::cin, s.student_id);
-    s.student_id = "12345678";
+    std::getline(std::cin, s.class_id);
+
+    do 
+    {
+        std::cout << "  ma sinh vien (8 chu so): ";
+        std::getline(std::cin, s.student_id);
+
+    } while (_validate_student_id(s.student_id) == false);
+    
     std::cout << "  ho va ten: ";
-    //std::getline(std::cin, s.name);
-    std::cout << "Nguyen Minh Hoang\n";
-    s.name = "Nguyen Minh Hoang";
-    std::cout << "  ngay sinh: ";
-    //std::cin >> s.dob.day >> s.dob.month >> s.dob.year;
-    std::cout << "2 12 2000\n";
-    s.dob.day = 2;
-    s.dob.month = 12;
-    s.dob.year = 2000;
-    std::cout << "  diem trung binh: ";
-    std::cout << "8.5\n";
-    //std::cin >> s.gpa;
-    s.gpa = 8.5f;
+    std::getline(std::cin, s.name);
+
+    do
+    {
+        std::cout << "  ngay sinh (dd mm yyyy): ";
+        std::cin >> s.dob.day >> s.dob.month >> s.dob.year;
+
+    } while (_validate_date(s.dob.day, s.dob.month, s.dob.year) == false);
+
+    do
+    {
+        std::cout << "  diem trung binh: ";
+        std::cin >> s.gpa;
+
+    } while (_validate_gpa(s.gpa) == false);
+
+    std::cout << s.class_id << " " << s.student_id << " " << s.name << " " << s.dob.day << " " << s.gpa << "\n";
     
     std::cout << "\n\nXac nhap thong tin sinh vien da nhap (y / n): ";
     user_confirm = _getch();
 
-    //std::cout << s.class_id << " " << s.student_id << " " << s.name << " " << s.dob.day << " " << s.gpa << "\n";
-    
+    if (user_confirm == 'y')
+    {
+        data_file.write(reinterpret_cast<char*>(&s), sizeof(s));
+    }
 
 }
 
 void list_students(const std::string table_title)
 {
+    Student s;
+    std::ifstream data_file("student.dat", std::ios::binary);
     char return_to_main;
+    data_file.read(reinterpret_cast<char*>(&s), sizeof(s));
     std::cout << "\n-***   ***   ***   ***   ***    " << table_title << "    ***   ***   ***   ***   ***-";
     std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
     std::cout << "\n-| STT |  ma lop  | ma sinh vien |        ho va ten        | ngay sinh  | diem trung bing |-";
     std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
-    std::cout << "\n | 001 |    AAA17 |    123456789 | Nguyen Minh Hoang       | 02/12/2000 |             8.5 | ";
-    std::cout << "\n | 002 |    ABB17 |    170000101 | Trinh Van Anh           | 24/10/2000 |             7.8 | ";
-    std::cout << "\n | 003 |    ACC17 |    170000201 | Hoang Xuan Dat          | 15/06/2000 |             7.4 | ";
-    std::cout << "\n | 003 |    ABB17 |    170000102 | Tran Van Minh           | 02/10/2000 |             7.4 | ";
+    std::cout << "\n | 000 |    " << s.class_id << " |     " << s.student_id << " |    " << s.name << "        |  " << s.dob.day << " " << s.dob.month << " " << s.dob.year << " |               " << s.gpa << " |-";
+
+
+
     std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
 
     std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
+    std::cin.ignore();
     return_to_main = _getch();
 
 }
@@ -306,6 +334,76 @@ void _statistics_rank_students()
 
     std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
     return_to_main = _getch();
+}
+
+bool _validate_student_id(const std::string id)
+{
+     return id.length() == 8;
+}
+
+bool _validate_date(const int input_day, const int input_month, const int input_year)
+{
+    return _validate_year(input_year)
+        && _validate_month(input_month)
+        && _validate_day(input_day, input_month, input_year);
+}
+
+bool _validate_year(const int year)
+{
+    return year < 2000 && year > 1980;
+}
+
+bool _validate_month(const int month)
+{
+    return month > 0 && month < 13;
+}
+
+bool _validate_day(const int day, const int month, const int year)
+{
+
+    if (day < 0)
+    {
+        return false;
+    }
+
+    if (month == 1
+        || month == 3
+        || month == 5
+        || month == 7
+        || month == 8
+        || month == 10
+        || month == 12)
+    {
+        return day < 32;
+    }
+
+    if (month == 4
+        || month == 6
+        || month == 9
+        || month == 11)
+    {
+        return day < 31;
+    }
+
+    // month == 2
+    if (_is_leap_year(year))
+    {
+        return day < 30;
+    }
+    else
+    {
+        return day < 29;
+    }
+}
+
+bool _is_leap_year(const int year)
+{
+    return (year % 4 == 0) && (year % 100 != 0);
+}
+
+bool _validate_gpa(const float input_gpa)
+{
+    return input_gpa >= 0.0f && input_gpa <= 10.0f;
 }
 
 
