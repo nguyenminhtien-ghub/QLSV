@@ -135,7 +135,7 @@ void add_recoid()
 
     } while (_validate_gpa(s.gpa) == false);
 
-    std::cout << s.class_id << " " << s.student_id << " " << s.name << " " << s.dob.day << " " << s.gpa << "\n";
+    //std::cout << s.class_id << " " << s.student_id << " " << s.name << " " << s.dob.day << " " << s.gpa << "\n";
     
     std::cout << "\n\nXac nhap thong tin sinh vien da nhap (y / n): ";
     user_confirm = _getch();
@@ -145,38 +145,50 @@ void add_recoid()
         data_file.write(reinterpret_cast<char*>(&s), sizeof(s));
     }
 
+    data_file.close();
+
 }
 
 void list_students(const std::string table_title)
 {
-    std::array<Student, 1> s_list;
-    std::ifstream data_file("student.dat", std::ios::binary);
+    Student s;
     char return_to_main;
-    data_file.read(reinterpret_cast<char*>(&s_list), sizeof(Student) * 1);
+    
+    std::ifstream data_file("student.dat", std::ios::binary);
+
+    if (!data_file)
+    {
+        std::cerr << "\n Loi mo file danh sach sinh vien";
+        return;
+    }
     std::cout << "\n-***   ***   ***   ***   ***    " << table_title << "    ***   ***   ***   ***   ***-";
     std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
     std::cout << "\n-| STT |  ma lop  | ma sinh vien |        ho va ten        | ngay sinh  | diem trung bing |-";
     std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
     
-    for (int i = 0; i < s_list.size(); i++)
+    int i = 1;
+    while (data_file.read(reinterpret_cast<char*>(&s), sizeof(s)))
     {
+        
         _print_single_student(i,
-            s_list[i].class_id,
-            s_list[i].student_id,
-            s_list[i].name,
-            s_list[i].dob.day,
-            s_list[i].dob.month,
-            s_list[i].dob.year,
-            s_list[i].gpa);
+            s.class_id,
+            s.student_id,
+            s.name,
+            s.dob.day,
+            s.dob.month,
+            s.dob.year,
+            s.gpa);
+        i++;
     }
     
 
     std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+    data_file.close();
 
     std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
-    std::cin.ignore();
+    
     return_to_main = _getch();
-
+    
 }
 
 
@@ -430,11 +442,11 @@ void _print_single_student(const int i, const std::string class_id, const std::s
     {
         std::cout << "\n | 0";
     }
-    std::cout << i + 1;
+    std::cout << i;
     std::cout << " | " << std::setw(8) << std::right << class_id;
     std::cout << " | " << std::setw(12) << std::right << student_id;
     std::cout << " | " << std::setw(23) << name;
-    std::cout << " | " << std::setw(3) << dob_day << "/" << dob_month << "/" << dob_year;
+    std::cout << " | " << std::setw(2) << dob_day << "/" << std::setw(2) << dob_month << "/" << dob_year;
     std::cout << " | " << std::setw(15) << std::right << gpa << " |";
 }
 
