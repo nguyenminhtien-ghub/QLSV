@@ -31,11 +31,16 @@ bool _is_leap_year(const int year);
 bool _validate_month(const int month);
 bool _validate_day(const int day, const int month, const int years);
 bool _validate_gpa(const float input_gpa);
+
+std::string trim_start(std::string input);
+std::string trim_end(std::string input);
+
 void list_students(const std::string table_title = "MENU 2 | Danh sach sinh vien");
 void _print_single_student(const int i, const std::string class_id, const std::string student_id, const std::string name, const int dob_day, const int dob_month, const int dob_year, const float gpa);
-void sort_students();
 
+void sort_students();
 void search_students();
+
 void statistics_student();
 void _statistics_quantity_by_class();
 void _statistics_rank_students();
@@ -98,7 +103,7 @@ void add_recoid()
 
     if (!data_file)
     {
-        std::cerr << "Loi mo file danh sach siinh vien";
+        std::cerr << "Loi mo file danh sach sinh vien";
         return;
     }
 
@@ -110,16 +115,23 @@ void add_recoid()
     std::cout << "\n";
     std::cout << "\n  ma lop: ";
     std::getline(std::cin, s.class_id);
+    s.class_id = trim_start(s.class_id);
+    s.class_id = trim_end(s.class_id);
 
     do 
     {
         std::cout << "  ma sinh vien (8 chu so): ";
         std::getline(std::cin, s.student_id);
+        s.student_id = trim_start(s.student_id);
+        s.student_id = trim_start(s.student_id);
 
     } while (_validate_student_id(s.student_id) == false);
     
     std::cout << "  ho va ten: ";
     std::getline(std::cin, s.name);
+    s.name = trim_start(s.name);
+    s.name = trim_end(s.name);
+
 
     do
     {
@@ -264,7 +276,7 @@ void sort_students()
 }
 void search_students()
 {
-    char searched_column;
+    char searched_key;
     std::cout << "\n*** MENU 4 | Tim kien sinh vien ***";
 
     std::cout << "\n\n Lua chon truong tim kiem:";
@@ -278,13 +290,14 @@ void search_students()
     {
         std::cout << "(Chon truong tim kiem (1) - (4)";
         std::cout << "\n>";
-        searched_column = _getch();
-        switch (searched_column)
+        searched_key = _getch();
+        std::cin.ignore();
+        switch (searched_key)
         {
         case '1':
         case '2':
         case '3':
-            std::cout << searched_column;
+            std::cout << searched_key;
             break;
         default:
             continue;
@@ -431,6 +444,34 @@ bool _validate_gpa(const float input_gpa)
     return input_gpa >= 0.0f && input_gpa <= 10.0f;
 }
 
+
+std::string trim_start(std::string input)
+{
+    if (input == "")
+    {
+        return input;
+    }
+    while (input.at(0) == std::string::npos)
+    {
+        input.substr(1);
+    };
+    return input;
+}
+
+std::string trim_end(std::string input)
+{
+    if (input == "")
+    {
+        return input;
+    }
+
+    while (input.at(input.length() - 1) == std::string::npos)
+    {
+        input.pop_back();
+    }
+    return input;
+}
+
 void _print_single_student(const int i, const std::string class_id, const std::string student_id, const std::string name, const int dob_day, const int dob_month, const int dob_year, const float gpa)
 {
     if (i < 10)
@@ -443,11 +484,11 @@ void _print_single_student(const int i, const std::string class_id, const std::s
         std::cout << "\n | 0";
     }
     std::cout << i;
-    std::cout << " | " << std::setw(8) << std::right << class_id;
-    std::cout << " | " << std::setw(12) << std::right << student_id;
-    std::cout << " | " << std::setw(23) << name;
-    std::cout << " | " << std::setw(2) << dob_day << "/" << std::setw(2) << dob_month << "/" << dob_year;
-    std::cout << " | " << std::setw(15) << std::right << gpa << " |";
+    std::cout << " | " << std::setw(8) << class_id;
+    std::cout << " | " << std::setw(12) << student_id;
+    std::cout << " | " << std::setw(23) << std::left << name;
+    std::cout << " | " << std::setw(2) << std::right << dob_day << "/" << std::setw(2) << dob_month << "/" << dob_year;
+    std::cout << " | " << std::setw(15) << gpa << " |";
 }
 
 
