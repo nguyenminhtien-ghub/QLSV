@@ -6,7 +6,6 @@
 #include <vector>
 #include <array>
 
-
 enum STUDENT_KEY {
     CLASS_ID = '1',
     ID = '2',
@@ -100,6 +99,7 @@ void sort_students();
 void selection_sort(const char key);
 void bubble_sort(const char key);
 void quicksort(const char key);
+void _quicksort(std::vector<Student>& students, int low, int high, const char key);
 int _partition_student_list(std::vector<Student>& students, int low, int high, const char key);
 void mergesort(const char key);
 bool compare_date(const Date d1, const Date d2);
@@ -563,7 +563,7 @@ std::string trim_start(std::string input)
     }
     while (input.at(0) == std::string::npos)
     {
-        input.substr(1);
+        input = input.substr(1);
     };
     return input;
 }
@@ -638,7 +638,7 @@ void selection_sort(const char key)
     }
     data_file.close();
 
-    int total_student = students.size();
+    size_t total_student = students.size();
     for (int i = 0; i < total_student - 1; i++)
     {
         int min_index = i;
@@ -721,17 +721,69 @@ void bubble_sort(const char key)
 {
 
 }
-//void quicksort(std::vector<Student>& students, int low, int high, const char key);
+
 void quicksort(const char key)
+{
+    std::vector<Student> students;
+    int low = 0;
+
+
+    std::ifstream data_file("student.dat", std::ios::binary);
+
+    if (!data_file)
+    {
+        return;
+        std::cerr << "\nLoi mo file danh sach sinh vien.\n";
+    }
+    while (data_file.eof() == false)
+    {
+        Student s;
+        s.deserialize(data_file);
+        if (data_file.eof())
+        {
+            break;
+        }
+        students.push_back(s);
+    }
+    data_file.close();
+
+    size_t high = students.size() - 1;
+    _quicksort(students, low, high, key);
+
+    std::cout << "\n-***   ***   ***   ***   ***     MENU | Danh sach sinh vien     ***   ***   ***   ***   ***-";
+    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+    std::cout << "\n-| STT |  ma lop  | ma sinh vien |        ho va ten        | ngay sinh  | diem trung bing |-";
+    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+
+    int idx = 0;
+    for (Student& student : students)
+    {
+        _print_single_student(idx,
+            student.class_id,
+            student.student_id,
+            student.name,
+            student.dob.day,
+            student.dob.month,
+            student.dob.year,
+            student.gpa);
+        idx++;
+    }
+
+
+    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+}
+
+void _quicksort(std::vector<Student>& students, int low, int high, const char key)
 {
     
     if (low < high)
     {
         int pivot_index = _partition_student_list(students, low, high, key);
-        quicksort(students, low, pivot_index - 1, key);
-        quicksort(students, pivot_index + 1, high, key);
+        _quicksort(students, low, pivot_index - 1, key);
+        _quicksort(students, pivot_index + 1, high, key);
     }
 }
+
 
 // Function to partition the list for quicksort
 int _partition_student_list(std::vector<Student>& students, int low, int high, const char key)
