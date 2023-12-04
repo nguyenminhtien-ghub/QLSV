@@ -168,7 +168,7 @@ void add_recoid()
 
     if (!data_file)
     {
-        std::cerr << "Loi mo file danh sach sinh vien";
+        std::cerr << "\nLoi mo file danh sach sinh vien.\n";
         return;
     }
 
@@ -719,6 +719,97 @@ void selection_sort(const char key)
 
 void bubble_sort(const char key)
 {
+    std::vector<Student> students;
+
+    std::ifstream data_file("student.dat", std::ios::binary);
+
+    if (!data_file)
+    {
+        return;
+        std::cerr << "\nLoi mo file danh sach sinh vien.\n";
+    }
+    while (data_file.eof() == false)
+    {
+        Student s;
+        s.deserialize(data_file);
+        if (data_file.eof())
+        {
+            break;
+        }
+        students.push_back(s);
+    }
+    data_file.close();
+
+    size_t total_student = students.size();
+    for (int i = 0; i < total_student - 1; i++)
+    {
+        for (int j = 0; j < total_student - i - 1; j++)
+        {
+            if (key == STUDENT_KEY::CLASS_ID)
+            {
+                if (students[j].class_id > students[j + 1].class_id)
+                {
+                    std::swap(students[j], students[j + 1]);
+                }
+                continue;
+            }
+            if (key == STUDENT_KEY::ID)
+            {
+                if (students[j].student_id > students[j + 1].student_id)
+                {
+                    std::swap(students[j], students[j + 1]);
+                }
+                continue;
+            }
+            if (key == STUDENT_KEY::NAME)
+            {
+                if (students[j].name > students[j + 1].name)
+                {
+                    std::swap(students[j], students[j + 1]);
+                }
+                continue;
+            }
+            if (key == STUDENT_KEY::DOB)
+            {
+                if (compare_date(students[j + 1].dob, students[j].dob))
+                {
+                    std::swap(students[j], students[j + 1]);
+                }
+                continue;
+            }
+            if (key == STUDENT_KEY::GPA)
+            {
+                if (students[j].gpa > students[j + 1].gpa)
+                {
+                    std::swap(students[j], students[j + 1]);
+                }
+                continue;
+            }
+
+        }
+    }
+
+    std::cout << "\n-***   ***   ***   ***   ***     MENU | Danh sach sinh vien     ***   ***   ***   ***   ***-";
+    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+    std::cout << "\n-| STT |  ma lop  | ma sinh vien |        ho va ten        | ngay sinh  | diem trung bing |-";
+    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+
+    int idx = 0;
+    for (Student& student : students)
+    {
+        _print_single_student(idx,
+            student.class_id,
+            student.student_id,
+            student.name,
+            student.dob.day,
+            student.dob.month,
+            student.dob.year,
+            student.gpa);
+        idx++;
+    }
+
+
+    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
 
 }
 
