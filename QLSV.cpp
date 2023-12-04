@@ -6,6 +6,7 @@
 #include <vector>
 #include <array>
 
+
 enum STUDENT_KEY {
     CLASS_ID = '1',
     ID = '2',
@@ -78,7 +79,6 @@ struct Student
 };
 
 
-
 void add_recoid();
 bool _validate_student_id(const std::string id);
 bool _validate_date(const int input_day,const int input_month,const int input_year);
@@ -100,7 +100,9 @@ void sort_students();
 void selection_sort(const char key);
 void bubble_sort(const char key);
 void quicksort(const char key);
+int _partition_student_list(std::vector<Student>& students, int low, int high, const char key);
 void mergesort(const char key);
+bool compare_date(const Date d1, const Date d2);
 
 void search_students();
 
@@ -271,6 +273,8 @@ void list_students(const std::string table_title)
 
 void sort_students()
 {
+    char return_to_main;
+
     char algo_choice;
     char key_choice;
 
@@ -320,6 +324,7 @@ void sort_students()
     {
         std::cout << "(Chon truong sap xep (1) - (4)";
         std::cout << "\n>";
+
         key_choice = _getch();
         switch (key_choice)
         {
@@ -328,7 +333,7 @@ void sort_students()
         case STUDENT_KEY::NAME:
         case STUDENT_KEY::DOB:
         case STUDENT_KEY::GPA:
-            std::cout << key_choice;
+            std::cout << key_choice << "\n";
             break;
         default:
             continue;
@@ -353,8 +358,10 @@ void sort_students()
         mergesort(key_choice);
     }
 
-    list_students(" MENU  | Danh sach sinh vien");
+    //list_students(" MENU  | Danh sach sinh vien");
+    std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
 
+    return_to_main = _getch();
 }
 
 void search_students()
@@ -635,65 +642,236 @@ void selection_sort(const char key)
     for (int i = 0; i < total_student - 1; i++)
     {
         int min_index = i;
-        for (int j = i + 1; total_student; j++)
+        for (int j = i + 1;  j < total_student; j++)
         {
             if (key == STUDENT_KEY::CLASS_ID)
             {
-                if (students[i].class_id < students[min_index].class_id)
+                if (students[j].class_id < students[min_index].class_id)
                 {
                     min_index = j;
                 }
+                continue;
             }
 
             if (key == STUDENT_KEY::ID)
             {
-                if (students[i].student_id < students[min_index].student_id)
+                if (students[j].student_id < students[min_index].student_id)
                 {
                     min_index = j;
                 }
+                continue;
             }
 
             if (key == STUDENT_KEY::NAME)
             {
-                if (students[i].name < students[min_index].name)
+                if (students[j].name < students[min_index].name)
                 {
                     min_index = j;
                 }
+                continue;
             }
 
             if (key == STUDENT_KEY::DOB)
             {
-                /*if (students[i].dob < students[min_index].dob)
+                if (compare_date(students[j].dob, students[min_index].dob))
                 {
                     min_index = j;
-                }*/
+                }
+                continue;
             }
             
             if (key == STUDENT_KEY::GPA)
             {
-                if (students[i].gpa < students[min_index].gpa)
+                if (students[j].gpa < students[min_index].gpa)
                 {
                     min_index = j;
                 }
+                continue;
             }
-
-
         }
+
+        std::swap(students[i], students[min_index]);
     }
+
+    std::cout << "\n-***   ***   ***   ***   ***     MENU | Danh sach sinh vien     ***   ***   ***   ***   ***-";
+    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+    std::cout << "\n-| STT |  ma lop  | ma sinh vien |        ho va ten        | ngay sinh  | diem trung bing |-";
+    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+
+    int idx = 0;
+    for (Student& student: students)
+    {
+        _print_single_student(idx,
+            student.class_id,
+            student.student_id,
+            student.name,
+            student.dob.day,
+            student.dob.month,
+            student.dob.year,
+            student.gpa);
+        idx++;
+    }
+
+
+    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+
 }
 
 void bubble_sort(const char key)
 {
 
 }
-
+//void quicksort(std::vector<Student>& students, int low, int high, const char key);
 void quicksort(const char key)
 {
-
+    
+    if (low < high)
+    {
+        int pivot_index = _partition_student_list(students, low, high, key);
+        quicksort(students, low, pivot_index - 1, key);
+        quicksort(students, pivot_index + 1, high, key);
+    }
 }
+
+// Function to partition the list for quicksort
+int _partition_student_list(std::vector<Student>& students, int low, int high, const char key)
+{
+    if (key == STUDENT_KEY::CLASS_ID)
+    {
+        std::string pivot = students[high].class_id;
+
+        int i = low - 1;
+
+
+        for (int j = low; j < high; j++)
+        {
+            if (students[j].class_id < pivot)
+            {
+                i++;
+                std::swap(students[i], students[j]);
+            }
+        }
+
+        std::swap(students[i + 1], students[high]);
+        return i + 1;
+    }
+    else if (key == STUDENT_KEY::ID)
+    {
+        std::string pivot = students[high].student_id;
+
+        int i = low - 1;
+
+
+        for (int j = low; j < high; j++)
+        {
+            if (students[j].student_id < pivot)
+            {
+                i++;
+                std::swap(students[i], students[j]);
+            }
+        }
+
+        std::swap(students[i + 1], students[high]);
+        return i + 1;
+
+    }
+    else if (key == STUDENT_KEY::NAME)
+    {
+        std::string pivot = students[high].name;
+
+        int i = low - 1;
+
+
+        for (int j = low; j < high; j++)
+        {
+            if (students[j].name < pivot)
+            {
+                i++;
+                std::swap(students[i], students[j]);
+            }
+        }
+
+        std::swap(students[i + 1], students[high]);
+        return i + 1;
+    }
+    else if (key == STUDENT_KEY::DOB)
+    {
+        Date pivot = students[high].dob;
+
+        int i = low - 1;
+
+
+        for (int j = low; j < high; j++)
+        {
+            if (compare_date(students[j].dob, pivot))
+            {
+                i++;
+                std::swap(students[i], students[j]);
+            }
+        }
+
+        std::swap(students[i + 1], students[high]);
+        return i + 1;
+    }
+    else
+    {
+        float pivot = students[high].gpa;
+
+        int i = low - 1;
+
+
+        for (int j = low; j < high; j++)
+        {
+            if (students[j].gpa < pivot)
+            {
+                i++;
+                std::swap(students[i], students[j]);
+            }
+        }
+
+        std::swap(students[i + 1], students[high]);
+        return i + 1;
+    }
+}
+
 
 void mergesort(const char key)
 {
 
 }
+
+// Return True if d1 is before d2
+bool compare_date(const Date d1, const Date d2)
+{
+    if (d1.year < d2.year)
+    {
+        return true;
+    }
+    else if (d1.year > d2.year)
+    {
+        return false;
+    }
+    else
+    {
+        if (d1.month < d2.month)
+        {
+            return true;
+        }
+        else if(d1.month > d2.month)
+        {
+            return false;
+        }
+        else
+        {
+            if (d1.day < d2.day)
+            {
+                return true;
+            }
+
+            return false;
+        }
+    }
+}
+
+
 
