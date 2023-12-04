@@ -3,7 +3,16 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <vector>
 #include <array>
+
+enum STUDENT_KEY {
+    CLASS_ID = '1',
+    ID = '2',
+    NAME = '3',
+    DOB = '4',
+    GPA = '5'
+};
 
 struct Date
 {
@@ -20,7 +29,54 @@ struct Student
     Date dob;
     float gpa;
 
+    void serialize(std::ostream& os) const
+    {
+        size_t class_id_size = this->class_id.size();
+        size_t id_size = this->student_id.size();
+        size_t name_size = this->name.size();
+
+        os.write(reinterpret_cast<const char*>(&class_id_size), sizeof(class_id_size));
+        os.write(class_id.c_str(), class_id_size);
+
+        os.write(reinterpret_cast<const char*>(&id_size), sizeof(id_size));
+        os.write(student_id.c_str(), id_size);
+
+        os.write(reinterpret_cast<const char*>(&name_size), sizeof(name_size));
+        os.write(name.c_str(), name_size);
+
+        os.write(reinterpret_cast<const char*>(&dob.day), sizeof(dob.day));
+        os.write(reinterpret_cast<const char*>(&dob.month), sizeof(dob.month));
+        os.write(reinterpret_cast<const char*>(&dob.year), sizeof(dob.year));
+        os.write(reinterpret_cast<const char*>(&gpa), sizeof(gpa));
+    }
+
+    void deserialize(std::istream& is)
+    {
+        size_t class_id_size, id_size, name_size;
+
+        is.read(reinterpret_cast<char*>(&class_id_size), sizeof(class_id_size));
+        if (is.eof())
+        {
+            return;
+        }
+        class_id.resize(class_id_size);
+        is.read(&class_id[0], class_id_size);
+
+        is.read(reinterpret_cast<char*>(&id_size), sizeof(id_size));
+        student_id.resize(id_size);
+        is.read(&student_id[0], id_size);
+
+        is.read(reinterpret_cast<char*>(&name_size), sizeof(name_size));
+        name.resize(name_size);
+        is.read(&name[0], name_size);
+
+        is.read(reinterpret_cast<char*>(&dob.day), sizeof(dob.day));
+        is.read(reinterpret_cast<char*>(&dob.month), sizeof(dob.month));
+        is.read(reinterpret_cast<char*>(&dob.year), sizeof(dob.year));
+        is.read(reinterpret_cast<char*>(&gpa), sizeof(gpa));
+    }
 };
+
 
 
 void add_recoid();
@@ -41,6 +97,11 @@ void list_students(const std::string table_title = "MENU 2 | Danh sach sinh vien
 void _print_single_student(const int i, const std::string class_id, const std::string student_id, const std::string name, const int dob_day, const int dob_month, const int dob_year, const float gpa);
 
 void sort_students();
+void selection_sort(const char key);
+void bubble_sort(const char key);
+void quicksort(const char key);
+void mergesort(const char key);
+
 void search_students();
 
 void statistics_student();
@@ -154,7 +215,7 @@ void add_recoid()
 
     if (user_confirm == 'y')
     {
-        data_file.write(reinterpret_cast<char*>(&s), sizeof(s));
+        s.serialize(data_file);
     }
 
     data_file.close();
@@ -163,7 +224,6 @@ void add_recoid()
 
 void list_students(const std::string table_title)
 {
-    Student s;
     char return_to_main;
     
     std::ifstream data_file("student.dat", std::ios::binary);
@@ -179,9 +239,14 @@ void list_students(const std::string table_title)
     std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
     
     int i = 1;
-    while (data_file.read(reinterpret_cast<char*>(&s), sizeof(s)))
+    while (data_file.eof() == false)
     {
-        
+        Student s;
+        s.deserialize(data_file);
+        if (data_file.eof())
+        {
+            break;
+        }
         _print_single_student(i,
             s.class_id,
             s.student_id,
@@ -207,21 +272,20 @@ void list_students(const std::string table_title)
 void sort_students()
 {
     char algo_choice;
-    char column_choice;
+    char key_choice;
 
     std::cout << "\n*** MENU 3 | Sap xep danh sach sinh vien ***";
     std::cout << "\n\nLua chon thuat toan sap xep:";
     std::cout << "\n(1) - Sap xep chon";
-    std::cout << "\n(2) - Sap xep chen";
-    std::cout << "\n(3) - Sap xep noi bot";
-    std::cout << "\n(4) - quicksort";
-    std::cout << "\n(5) - mergesort";
+    std::cout << "\n(2) - Sap xep noi bot";
+    std::cout << "\n(3) - quicksort";
+    std::cout << "\n(4) - mergesort";
     std::cout << "\n(0) - Quay lai Menu\n";
 
     std::cin.ignore();
     while(true)
     {
-        std::cout << "(Chon thuat toan (1) - (5))";
+        std::cout << "(Chon thuat toan (1) - (4))";
         std::cout << "\n>";
         algo_choice = _getch();
         
@@ -233,7 +297,6 @@ void sort_students()
         case '2':
         case '3':
         case '4':
-        case '5':
             std::cout << algo_choice;
             break;
         default:
@@ -246,23 +309,26 @@ void sort_students()
     
 
     std::cout << "\nChon truong sao xep:";
-    std::cout << "\n(1) - ma sinh vien";
-    std::cout << "\n(2) - hoc va ten";
-    std::cout << "\n(3) - ngay sinh";
-    std::cout << "\n(4) - diem trung bing\n";
+    std::cout << "\n(1) - ma lop";
+    std::cout << "\n(2) - ma sinh vien";
+    std::cout << "\n(3) - hoc va ten";
+    std::cout << "\n(4) - ngay sinh";
+    std::cout << "\n(5) - diem trung bing\n";
 
     
     while(true)
     {
         std::cout << "(Chon truong sap xep (1) - (4)";
         std::cout << "\n>";
-        column_choice = _getch();
-        switch (column_choice)
+        key_choice = _getch();
+        switch (key_choice)
         {
-        case '1':
-        case '2':
-        case '3':
-            std::cout << column_choice;
+        case STUDENT_KEY::CLASS_ID:
+        case STUDENT_KEY::ID:
+        case STUDENT_KEY::NAME:
+        case STUDENT_KEY::DOB:
+        case STUDENT_KEY::GPA:
+            std::cout << key_choice;
             break;
         default:
             continue;
@@ -270,10 +336,27 @@ void sort_students()
         break;
     };
 
+    if (algo_choice == '1')
+    {
+        selection_sort(key_choice);
+    }
+    else if (algo_choice == '2')
+    {
+        bubble_sort(key_choice);
+    }
+    else if (algo_choice == '3')
+    {
+        quicksort(key_choice);
+    }
+    else if (algo_choice == '4')
+    {
+        mergesort(key_choice);
+    }
 
     list_students(" MENU  | Danh sach sinh vien");
 
 }
+
 void search_students()
 {
     char searched_key;
@@ -307,6 +390,7 @@ void search_students()
 
     list_students("MENU   | Ket qua tim kiem   ");
 }
+
 void statistics_student()
 {
     char user_choice;
@@ -522,5 +606,94 @@ void _print_single_student(const int i, const std::string class_id, const std::s
     std::cout << " | " << std::setw(23) << std::left << name;
     std::cout << " | " << std::setw(2) << std::right << dob_day << "/" << std::setw(2) << dob_month << "/" << dob_year;
     std::cout << " | " << std::setw(15) << gpa << " |";
+}
+
+void selection_sort(const char key)
+{
+    std::vector<Student> students;
+
+    std::ifstream data_file("student.dat", std::ios::binary);
+
+    if (!data_file)
+    {
+        return;
+        std::cerr << "\nLoi mo file danh sach sinh vien.\n";
+    }
+    while (data_file.eof() == false)
+    {
+        Student s;
+        s.deserialize(data_file);
+        if (data_file.eof())
+        {
+            break;
+        }
+        students.push_back(s);
+    }
+    data_file.close();
+
+    int total_student = students.size();
+    for (int i = 0; i < total_student - 1; i++)
+    {
+        int min_index = i;
+        for (int j = i + 1; total_student; j++)
+        {
+            if (key == STUDENT_KEY::CLASS_ID)
+            {
+                if (students[i].class_id < students[min_index].class_id)
+                {
+                    min_index = j;
+                }
+            }
+
+            if (key == STUDENT_KEY::ID)
+            {
+                if (students[i].student_id < students[min_index].student_id)
+                {
+                    min_index = j;
+                }
+            }
+
+            if (key == STUDENT_KEY::NAME)
+            {
+                if (students[i].name < students[min_index].name)
+                {
+                    min_index = j;
+                }
+            }
+
+            if (key == STUDENT_KEY::DOB)
+            {
+                /*if (students[i].dob < students[min_index].dob)
+                {
+                    min_index = j;
+                }*/
+            }
+            
+            if (key == STUDENT_KEY::GPA)
+            {
+                if (students[i].gpa < students[min_index].gpa)
+                {
+                    min_index = j;
+                }
+            }
+
+
+        }
+    }
+}
+
+void bubble_sort(const char key)
+{
+
+}
+
+void quicksort(const char key)
+{
+
+}
+
+void mergesort(const char key)
+{
+
 }
 
