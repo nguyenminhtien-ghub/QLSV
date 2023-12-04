@@ -32,8 +32,10 @@ bool _validate_month(const int month);
 bool _validate_day(const int day, const int month, const int years);
 bool _validate_gpa(const float input_gpa);
 
+std::string str_to_name_t(std::string input);
 std::string trim_start(std::string input);
 std::string trim_end(std::string input);
+std::string clear_duplicate_space(std::string input);
 
 void list_students(const std::string table_title = "MENU 2 | Danh sach sinh vien");
 void _print_single_student(const int i, const std::string class_id, const std::string student_id, const std::string name, const int dob_day, const int dob_month, const int dob_year, const float gpa);
@@ -129,9 +131,7 @@ void add_recoid()
     
     std::cout << "  ho va ten: ";
     std::getline(std::cin, s.name);
-    s.name = trim_start(s.name);
-    s.name = trim_end(s.name);
-
+    s.name = str_to_name_t(s.name);
 
     do
     {
@@ -444,6 +444,25 @@ bool _validate_gpa(const float input_gpa)
     return input_gpa >= 0.0f && input_gpa <= 10.0f;
 }
 
+std::string str_to_name_t(std::string input)
+{
+    input = trim_start(input);
+    input = trim_end(input);
+    input = clear_duplicate_space(input);
+
+    input[0] = std::toupper(input[0]);
+    for (int i = 1; i < input.length(); i++)
+    {
+        if (input[i - 1] == ' ')
+        {
+            input[i] = std::toupper(input[i]);
+            continue;
+        }
+        input[i] = std::tolower(input[i]);
+    }
+
+    return input;
+}
 
 std::string trim_start(std::string input)
 {
@@ -472,6 +491,20 @@ std::string trim_end(std::string input)
     return input;
 }
 
+std::string clear_duplicate_space(std::string input)
+{
+    if (input == "")
+    {
+        return input;
+    }
+    char duplicate_space_char[3] = "  ";
+    while (input.find(duplicate_space_char) != std::string::npos)
+    {
+        input.replace(input.find(duplicate_space_char), sizeof(duplicate_space_char), " ");
+    }
+    return input;
+}
+
 void _print_single_student(const int i, const std::string class_id, const std::string student_id, const std::string name, const int dob_day, const int dob_month, const int dob_year, const float gpa)
 {
     if (i < 10)
@@ -490,5 +523,4 @@ void _print_single_student(const int i, const std::string class_id, const std::s
     std::cout << " | " << std::setw(2) << std::right << dob_day << "/" << std::setw(2) << dob_month << "/" << dob_year;
     std::cout << " | " << std::setw(15) << gpa << " |";
 }
-
 
