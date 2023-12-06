@@ -102,6 +102,8 @@ void quicksort(const char key);
 void _quicksort(std::vector<Student>& students, int low, int high, const char key);
 int _partition_student_list(std::vector<Student>& students, int low, int high, const char key);
 void mergesort(const char key);
+void _mergesort(std::vector<Student>& students, int left, int right, const char key);
+void _merge(std::vector<Student>& students, int left, int middle, int right, const char key);
 bool compare_date(const Date d1, const Date d2);
 
 void search_students();
@@ -980,7 +982,186 @@ int _partition_student_list(std::vector<Student>& students, int low, int high, c
 
 void mergesort(const char key)
 {
+    std::vector<Student> students;
 
+
+    std::ifstream data_file("student.dat", std::ios::binary);
+
+    if (!data_file)
+    {
+        return;
+        std::cerr << "\nLoi mo file danh sach sinh vien.\n";
+    }
+    while (data_file.eof() == false)
+    {
+        Student s;
+        s.deserialize(data_file);
+        if (data_file.eof())
+        {
+            break;
+        }
+        students.push_back(s);
+    }
+    data_file.close();
+
+    _mergesort(students, 0, students.size() - 1, key);
+
+    std::cout << "\n-***   ***   ***   ***   ***     MENU | Danh sach sinh vien     ***   ***   ***   ***   ***-";
+    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+    std::cout << "\n-| STT |  ma lop  | ma sinh vien |        ho va ten        | ngay sinh  | diem trung bing |-";
+    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+
+    int idx = 0;
+    for (Student& student : students)
+    {
+        _print_single_student(idx,
+            student.class_id,
+            student.student_id,
+            student.name,
+            student.dob.day,
+            student.dob.month,
+            student.dob.year,
+            student.gpa);
+        idx++;
+    }
+
+
+    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+
+}
+
+
+void _mergesort(std::vector<Student>& students, int left, int right, const char key)
+{
+    if (left < right)
+    {
+        // avoids overflow
+        int middle = left + (right - left) / 2;
+
+        _mergesort(students, left, middle, key);
+        _mergesort(students, middle + 1, right, key);
+
+        _merge(students, left, middle, right, key);
+    }
+}
+
+void _merge(std::vector<Student>& students, int left, int middle, int right, const char key)
+{
+    int left_size = middle - left + 1;
+    int right_size = right - middle;
+
+    std::vector<Student> left_list{};
+    std::vector<Student> right_list{};
+
+    for (int i = 0; i < left_size; i++)
+    {
+        left_list.push_back(students[left + i]);
+    }
+
+    for (int i = 0; i < right_size; i++)
+    {
+        right_list.push_back(students[middle + i + 1]);
+    }
+
+    int i = 0;
+    int j = 0;
+    int k = left;
+    while (i < left_size
+        && j < right_size)
+    {
+        if (key == STUDENT_KEY::CLASS_ID)
+        {
+            if (left_list[i].class_id <= right_list[j].class_id)
+            {
+                students[k] = left_list[i];
+                i++;
+            }
+            else
+            {
+                students[k] = right_list[j];
+                j++;
+            }
+            k++;
+            continue;
+        }
+
+        if (key == STUDENT_KEY::ID)
+        {
+            if (left_list[i].student_id <= right_list[j].student_id)
+            {
+                students[k] = left_list[i];
+                i++;
+            }
+            else
+            {
+                students[k] = right_list[j];
+                j++;
+            }
+            k++;
+            continue;
+        }
+
+        if (key == STUDENT_KEY::NAME)
+        {
+            if (left_list[i].name <= right_list[j].name)
+            {
+                students[k] = left_list[i];
+                i++;
+            }
+            else
+            {
+                students[k] = right_list[j];
+                j++;
+            }
+            k++;
+            continue;
+        }
+        if (key == STUDENT_KEY::DOB)
+        {
+            if (compare_date(right_list[j].dob, left_list[i].dob) == false)
+            {
+                students[k] = left_list[i];
+                i++;
+            }
+            else
+            {
+                students[k] = right_list[j];
+                j++;
+            }
+            k++;
+            continue;
+        }
+        if (key == STUDENT_KEY::GPA)
+        {
+            if (left_list[i].gpa <= right_list[j].gpa)
+            {
+                students[k] = left_list[i];
+                i++;
+            }
+            else
+            {
+                students[k] = right_list[j];
+                j++;
+            }
+            k++;
+            continue;
+        }
+
+    }
+
+    while (i < left_size)
+    {
+        students[k] = left_list[i];
+        i++;
+        k++;
+    }
+
+    while (j < right_size)
+    {
+        students[k] = right_list[j];
+        j++;
+        k++;
+    }
 }
 
 // Return True if d1 is before d2
@@ -1015,6 +1196,5 @@ bool compare_date(const Date d1, const Date d2)
         }
     }
 }
-
 
 
