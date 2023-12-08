@@ -86,13 +86,14 @@ bool _is_leap_year(const int year);
 bool _validate_month(const int month);
 bool _validate_day(const int day, const int month, const int years);
 bool _validate_gpa(const float input_gpa);
-
 std::string str_to_name_t(std::string input);
 std::string trim_start(std::string input);
 std::string trim_end(std::string input);
 std::string clear_duplicate_space(std::string input);
+void save_student_list(std::vector<Student>& students);
 
 void list_students(const std::string table_title = "MENU 2 | Danh sach sinh vien");
+void load_student_list(std::vector<Student> &students);
 void _print_single_student(const int i, const std::string class_id, const std::string student_id, const std::string name, const int dob_day, const int dob_month, const int dob_year, const float gpa);
 
 void sort_students();
@@ -229,28 +230,19 @@ void add_recoid()
 void list_students(const std::string table_title)
 {
     char return_to_main;
-    
-    std::ifstream data_file("student.dat", std::ios::binary);
 
-    if (!data_file)
-    {
-        std::cerr << "\n Loi mo file danh sach sinh vien";
-        return;
-    }
+    std::vector<Student> students;
+    load_student_list(students);
+
     std::cout << "\n-***   ***   ***   ***   ***    " << table_title << "    ***   ***   ***   ***   ***-";
     std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
     std::cout << "\n-| STT |  ma lop  | ma sinh vien |        ho va ten        | ngay sinh  | diem trung bing |-";
     std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
     
     int i = 1;
-    while (data_file.eof() == false)
+
+    for (Student& s : students)
     {
-        Student s;
-        s.deserialize(data_file);
-        if (data_file.eof())
-        {
-            break;
-        }
         _print_single_student(i,
             s.class_id,
             s.student_id,
@@ -261,10 +253,8 @@ void list_students(const std::string table_title)
             s.gpa);
         i++;
     }
-    
 
     std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
-    data_file.close();
 
     std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
     
@@ -275,8 +265,7 @@ void list_students(const std::string table_title)
 
 void sort_students()
 {
-    char return_to_main;
-
+    std::string table_title;
     char algo_choice;
     char key_choice;
 
@@ -313,14 +302,12 @@ void sort_students()
         break;
     }
     
-
     std::cout << "\nChon truong sao xep:";
     std::cout << "\n(1) - ma lop";
     std::cout << "\n(2) - ma sinh vien";
     std::cout << "\n(3) - hoc va ten";
     std::cout << "\n(4) - ngay sinh";
     std::cout << "\n(5) - diem trung bing\n";
-
     
     while(true)
     {
@@ -331,10 +318,15 @@ void sort_students()
         switch (key_choice)
         {
         case STUDENT_KEY::CLASS_ID:
+            table_title = "MENU | DS sinh vien theo lop";
         case STUDENT_KEY::ID:
+            table_title = "MENU | DSSV theo ma sinhvien";
         case STUDENT_KEY::NAME:
+            table_title = "MENU | DS sinh vien theo ten";
         case STUDENT_KEY::DOB:
+            table_title = " MENU | DSSV theo ngay sinh ";
         case STUDENT_KEY::GPA:
+            table_title = "    MENU | DSSV theo diem   ";
             std::cout << key_choice << "\n";
             break;
         default:
@@ -360,10 +352,7 @@ void sort_students()
         mergesort(key_choice);
     }
 
-    //list_students(" MENU  | Danh sach sinh vien");
-    std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
-
-    return_to_main = _getch();
+    list_students(table_title);
 }
 
 void search_students()
@@ -598,6 +587,49 @@ std::string clear_duplicate_space(std::string input)
     return input;
 }
 
+void save_student_list(std::vector<Student>& students)
+{
+    std::ofstream data_file("student.dat", std::ios::binary);
+
+    if (!data_file)
+    {
+        std::cerr << "\nLoi mo file danh sach sinh vien.\n";
+        return;
+    }
+
+    for (Student& s : students)
+    {
+        s.serialize(data_file);
+    }
+
+    data_file.close();
+
+}
+
+void load_student_list(std::vector<Student>& students)
+{
+    std::ifstream data_file("student.dat", std::ios::binary);
+
+    if (!data_file)
+    {
+        return;
+        std::cerr << "\nLoi mo file danh sach sinh vien.\n";
+    }
+    while (data_file.eof() == false)
+    {
+        Student s;
+        s.deserialize(data_file);
+        if (data_file.eof())
+        {
+            break;
+        }
+        students.push_back(s);
+    }
+    data_file.close();
+}
+
+
+
 void _print_single_student(const int i, const std::string class_id, const std::string student_id, const std::string name, const int dob_day, const int dob_month, const int dob_year, const float gpa)
 {
     if (i < 10)
@@ -621,24 +653,7 @@ void selection_sort(const char key)
 {
     std::vector<Student> students;
 
-    std::ifstream data_file("student.dat", std::ios::binary);
-
-    if (!data_file)
-    {
-        return;
-        std::cerr << "\nLoi mo file danh sach sinh vien.\n";
-    }
-    while (data_file.eof() == false)
-    {
-        Student s;
-        s.deserialize(data_file);
-        if (data_file.eof())
-        {
-            break;
-        }
-        students.push_back(s);
-    }
-    data_file.close();
+    load_student_list(students);
 
     size_t total_student = students.size();
     for (int i = 0; i < total_student - 1; i++)
@@ -695,27 +710,7 @@ void selection_sort(const char key)
         std::swap(students[i], students[min_index]);
     }
 
-    std::cout << "\n-***   ***   ***   ***   ***     MENU | Danh sach sinh vien     ***   ***   ***   ***   ***-";
-    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
-    std::cout << "\n-| STT |  ma lop  | ma sinh vien |        ho va ten        | ngay sinh  | diem trung bing |-";
-    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
-
-    int idx = 0;
-    for (Student& student: students)
-    {
-        _print_single_student(idx,
-            student.class_id,
-            student.student_id,
-            student.name,
-            student.dob.day,
-            student.dob.month,
-            student.dob.year,
-            student.gpa);
-        idx++;
-    }
-
-
-    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+    save_student_list(students);
 
 }
 
@@ -723,24 +718,7 @@ void bubble_sort(const char key)
 {
     std::vector<Student> students;
 
-    std::ifstream data_file("student.dat", std::ios::binary);
-
-    if (!data_file)
-    {
-        return;
-        std::cerr << "\nLoi mo file danh sach sinh vien.\n";
-    }
-    while (data_file.eof() == false)
-    {
-        Student s;
-        s.deserialize(data_file);
-        if (data_file.eof())
-        {
-            break;
-        }
-        students.push_back(s);
-    }
-    data_file.close();
+    load_student_list(students);
 
     size_t total_student = students.size();
     for (int i = 0; i < total_student - 1; i++)
@@ -790,29 +768,8 @@ void bubble_sort(const char key)
 
         }
     }
-
-    std::cout << "\n-***   ***   ***   ***   ***     MENU | Danh sach sinh vien     ***   ***   ***   ***   ***-";
-    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
-    std::cout << "\n-| STT |  ma lop  | ma sinh vien |        ho va ten        | ngay sinh  | diem trung bing |-";
-    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
-
-    int idx = 0;
-    for (Student& student : students)
-    {
-        _print_single_student(idx,
-            student.class_id,
-            student.student_id,
-            student.name,
-            student.dob.day,
-            student.dob.month,
-            student.dob.year,
-            student.gpa);
-        idx++;
-    }
-
-
-    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
-
+    
+    save_student_list(students);
 }
 
 void quicksort(const char key)
@@ -820,50 +777,13 @@ void quicksort(const char key)
     std::vector<Student> students;
     int low = 0;
 
-
-    std::ifstream data_file("student.dat", std::ios::binary);
-
-    if (!data_file)
-    {
-        return;
-        std::cerr << "\nLoi mo file danh sach sinh vien.\n";
-    }
-    while (data_file.eof() == false)
-    {
-        Student s;
-        s.deserialize(data_file);
-        if (data_file.eof())
-        {
-            break;
-        }
-        students.push_back(s);
-    }
-    data_file.close();
+    load_student_list(students);
 
     size_t high = students.size() - 1;
     _quicksort(students, low, high, key);
 
-    std::cout << "\n-***   ***   ***   ***   ***     MENU | Danh sach sinh vien     ***   ***   ***   ***   ***-";
-    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
-    std::cout << "\n-| STT |  ma lop  | ma sinh vien |        ho va ten        | ngay sinh  | diem trung bing |-";
-    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+    save_student_list(students);
 
-    int idx = 0;
-    for (Student& student : students)
-    {
-        _print_single_student(idx,
-            student.class_id,
-            student.student_id,
-            student.name,
-            student.dob.day,
-            student.dob.month,
-            student.dob.year,
-            student.gpa);
-        idx++;
-    }
-
-
-    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
 }
 
 void _quicksort(std::vector<Student>& students, int low, int high, const char key)
@@ -881,12 +801,11 @@ void _quicksort(std::vector<Student>& students, int low, int high, const char ke
 // Function to partition the list for quicksort
 int _partition_student_list(std::vector<Student>& students, int low, int high, const char key)
 {
+    int i = low - 1;
+
     if (key == STUDENT_KEY::CLASS_ID)
     {
         std::string pivot = students[high].class_id;
-
-        int i = low - 1;
-
 
         for (int j = low; j < high; j++)
         {
@@ -903,9 +822,6 @@ int _partition_student_list(std::vector<Student>& students, int low, int high, c
     else if (key == STUDENT_KEY::ID)
     {
         std::string pivot = students[high].student_id;
-
-        int i = low - 1;
-
 
         for (int j = low; j < high; j++)
         {
@@ -924,9 +840,6 @@ int _partition_student_list(std::vector<Student>& students, int low, int high, c
     {
         std::string pivot = students[high].name;
 
-        int i = low - 1;
-
-
         for (int j = low; j < high; j++)
         {
             if (students[j].name < pivot)
@@ -943,9 +856,6 @@ int _partition_student_list(std::vector<Student>& students, int low, int high, c
     {
         Date pivot = students[high].dob;
 
-        int i = low - 1;
-
-
         for (int j = low; j < high; j++)
         {
             if (compare_date(students[j].dob, pivot))
@@ -961,9 +871,6 @@ int _partition_student_list(std::vector<Student>& students, int low, int high, c
     else
     {
         float pivot = students[high].gpa;
-
-        int i = low - 1;
-
 
         for (int j = low; j < high; j++)
         {
@@ -984,50 +891,11 @@ void mergesort(const char key)
 {
     std::vector<Student> students;
 
-
-    std::ifstream data_file("student.dat", std::ios::binary);
-
-    if (!data_file)
-    {
-        return;
-        std::cerr << "\nLoi mo file danh sach sinh vien.\n";
-    }
-    while (data_file.eof() == false)
-    {
-        Student s;
-        s.deserialize(data_file);
-        if (data_file.eof())
-        {
-            break;
-        }
-        students.push_back(s);
-    }
-    data_file.close();
+    load_student_list(students);
 
     _mergesort(students, 0, students.size() - 1, key);
 
-    std::cout << "\n-***   ***   ***   ***   ***     MENU | Danh sach sinh vien     ***   ***   ***   ***   ***-";
-    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
-    std::cout << "\n-| STT |  ma lop  | ma sinh vien |        ho va ten        | ngay sinh  | diem trung bing |-";
-    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
-
-    int idx = 0;
-    for (Student& student : students)
-    {
-        _print_single_student(idx,
-            student.class_id,
-            student.student_id,
-            student.name,
-            student.dob.day,
-            student.dob.month,
-            student.dob.year,
-            student.gpa);
-        idx++;
-    }
-
-
-    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
-
+    save_student_list(students);
 }
 
 
