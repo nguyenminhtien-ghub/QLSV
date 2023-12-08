@@ -5,6 +5,10 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <bitset>
+
+// 00001: class_id is sorted, 00010: student_id is sorted, 00100: name, 01000: date of birth, 10000: gpa
+std::bitset<5> sorted_key{ 0b0'0'0'0'0 };
 
 enum STUDENT_KEY {
     CLASS_ID = '1',
@@ -108,6 +112,10 @@ void _merge(std::vector<Student>& students, int left, int middle, int right, con
 bool compare_date(const Date d1, const Date d2);
 
 void search_students();
+void _search_info(const char key);
+void _search_result(const std::string search_value, const char key);
+void _search_result(const int year_value, const int month_value = 0, const int day_value = 0);
+void _search_result(const float gpa_value);
 
 void statistics_student();
 void _statistics_quantity_by_class();
@@ -120,7 +128,6 @@ int main()
 
     while (true)
     {
-
         std::system("cls");
         std::cout << "-|----------------------------|-";
         std::cout << "\n |     QUAN LY SINH VIEN      |";
@@ -262,7 +269,6 @@ void list_students(const std::string table_title)
     
 }
 
-
 void sort_students()
 {
     std::string table_title;
@@ -352,12 +358,34 @@ void sort_students()
         mergesort(key_choice);
     }
 
+    if (key_choice == STUDENT_KEY::CLASS_ID)
+    {
+        sorted_key = 0b0'0'0'0'1;
+    }
+    else if (key_choice == STUDENT_KEY::ID)
+    {
+        sorted_key = 0b0'0'0'1'0;
+    }
+    else if (key_choice == STUDENT_KEY::NAME)
+    {
+        sorted_key = 0b0'0'1'0'0;
+    }
+    else if (key_choice == STUDENT_KEY::DOB)
+    {
+        sorted_key = 0b0'1'0'0'0;
+    }
+    else if (key_choice == STUDENT_KEY::GPA)
+    {
+        sorted_key = 0b1'0'0'0'0;
+    }
+
     list_students(table_title);
 }
 
 void search_students()
 {
     char searched_key;
+    std::string search_value;
     std::cout << "\n*** MENU 4 | Tim kien sinh vien ***";
 
     std::cout << "\n\n Lua chon truong tim kiem:";
@@ -369,15 +397,17 @@ void search_students()
 
     while (true)
     {
-        std::cout << "(Chon truong tim kiem (1) - (4)";
+        std::cout << "\n(Chon truong tim kiem (1) - (5)";
         std::cout << "\n>";
         searched_key = _getch();
         std::cin.ignore();
         switch (searched_key)
         {
-        case '1':
-        case '2':
-        case '3':
+        case STUDENT_KEY::CLASS_ID:
+        case STUDENT_KEY::ID:
+        case STUDENT_KEY::NAME:
+        case STUDENT_KEY::DOB:
+        case STUDENT_KEY::GPA:
             std::cout << searched_key;
             break;
         default:
@@ -386,7 +416,10 @@ void search_students()
         break;
     };
 
-    list_students("MENU   | Ket qua tim kiem   ");
+    _search_info(searched_key);
+    
+
+    //list_students("  MENU  | Ket qua tim kiem  ");
 }
 
 void statistics_student()
@@ -1030,6 +1063,262 @@ void _merge(std::vector<Student>& students, int left, int middle, int right, con
         j++;
         k++;
     }
+}
+
+void _search_info(const char key)
+{
+    char return_to_main;
+    if (key == STUDENT_KEY::CLASS_ID || key == STUDENT_KEY::ID || key == STUDENT_KEY::NAME)
+    {
+        std::string search_value;
+        std::cout << "\n\nTim kiem: ";
+        std::getline(std::cin, search_value);
+        search_value = trim_start(search_value);
+        search_value = trim_end(search_value);
+
+        std::cout << "\n-***   ***   ***   ***   ***   ***    Ket qua tim kiem    ***   ***   ***   ***   ***   ***-";
+        _search_result(search_value, key);
+
+        std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
+
+        return_to_main = _getch();
+        return;
+    }
+
+    if (key == STUDENT_KEY::DOB)
+    {
+        int day_value = 0;
+        int month_value = 0;
+        int year_value = 0;
+        
+        std::cout << "\n";
+        
+        while (true)
+        {
+            std::cout << "\nTim kiem (nhap 0 de bo qua ngay hoac thang)";
+            std::cout << "\n   - ngay: ";
+            std::cin >> day_value;
+            std::cout << "   - thang: ";
+            std::cin >> month_value;
+            std::cout << "   - nam: ";
+            std::cin >> year_value;
+
+            if (day_value == 0 && month_value == 0)
+            {
+                _search_result(year_value);
+                break;
+            }
+            if (day_value == 0)
+            {
+                if (_validate_month(month_value) == false)
+                {
+                    std::cout << "\nThang khong hop le.";
+                    continue;
+                }
+                _search_result(year_value, month_value);
+                break;
+            }
+
+            if (_validate_date(day_value, month_value, year_value))
+            {
+                _search_result(year_value, month_value, day_value);
+                break;
+            }
+            else
+            {
+                std::cout << "\nThoi gian khong hop le.";
+            }
+        }
+        
+
+        std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
+
+        return_to_main = _getch();
+        return;
+    }
+
+    if (key == STUDENT_KEY::GPA)
+    {
+        float gpa_input;
+        std::cout << "\nGia tri diem: ";
+        std::cin >> gpa_input;
+        std::cout << "\n-***   ***   ***   ***   ***   ***    Ket qua tim kiem    ***   ***   ***   ***   ***   ***-";
+        _search_result(gpa_input);
+
+        std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
+
+        return_to_main = _getch();
+        return;
+    }
+}
+
+void _search_result(const std::string search_value, const char key)
+{
+    int count = 0;
+    std::vector<Student> students;
+    load_student_list(students);
+
+    std::cout << "\n-|-----|----------|--------------|---Ket qua chinh xac-----|------------|-----------------|-";
+    
+
+    if (count == 0)
+    {
+        count = 0;
+        std::cout << "\n-|                  (Khong tim thay thong tin sinh vien chinh trung hop)                  |-";
+    }
+    std::cout << "\n-|-----|----------|--------------|----Ket qua gan dung-----|------------|-----------------|-";
+    
+
+    if (count == 0)
+    {
+        std::cout << "\n-|                          (Khong tim thay thong tin sinh vien)                          |-";
+    }
+    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+}
+
+void _search_result(const int year_value, const int month_value, const int day_value)
+{
+    int count = 0;
+    std::vector<Student> students;
+    load_student_list(students);
+
+    std::cout << "\n-***   ***   ***   ***   ***   ***    Ket qua tim kiem    ***   ***   ***   ***   ***   ***-";
+    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+    if (sorted_key != 0b0'1'0'0'0)
+    {
+        if (month_value == 0 && day_value == 0)
+        {
+            for (Student& s : students)
+            {
+                if (s.dob.year == year_value)
+                {
+                    _print_single_student(1,
+                        s.class_id,
+                        s.student_id,
+                        s.name,
+                        s.dob.day,
+                        s.dob.month,
+                        s.dob.year,
+                        s.gpa);
+                    count++;
+                }
+            }
+        }
+        else if (day_value == 0)
+        {
+            for (Student& s : students)
+            {
+                if (s.dob.year == year_value && s.dob.month == month_value)
+                {
+                    _print_single_student(1,
+                        s.class_id,
+                        s.student_id,
+                        s.name,
+                        s.dob.day,
+                        s.dob.month,
+                        s.dob.year,
+                        s.gpa);
+                    count++;
+                }
+            }
+        }
+        else
+        {
+            for (Student& s : students)
+            {
+                if (s.dob.year == year_value && s.dob.month == month_value && s.dob.day == day_value)
+                {
+                    _print_single_student(1,
+                        s.class_id,
+                        s.student_id,
+                        s.name,
+                        s.dob.day,
+                        s.dob.month,
+                        s.dob.year,
+                        s.gpa);
+                    count++;
+                }
+            }
+        }
+    }
+    else
+    {
+
+    }
+
+    if (count == 0)
+    {
+        count = 0;
+        std::cout << "\n-|                  (Khong tim thay thong tin sinh vien chinh trung hop)                  |-";
+    }
+    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+}
+
+void _search_result(const float gpa_value)
+{
+    int count = 0;
+    std::vector<Student> students;
+    load_student_list(students);
+
+    std::cout << "\n-|-----|----------|--------------|---Ket qua chinh xac-----|------------|-----------------|-";
+    if (sorted_key != 0b1'0'0'0'0)
+    {
+        for (Student& s : students)
+        {
+            if (s.gpa == gpa_value)
+            {
+                _print_single_student(1,
+                    s.class_id,
+                    s.student_id,
+                    s.name,
+                    s.dob.day,
+                    s.dob.month,
+                    s.dob.year,
+                    s.gpa);
+                count++;
+            }
+        }
+    }
+    else
+    {
+
+    }
+
+    if (count == 0)
+    {
+        count = 0;
+        std::cout << "\n-|                  (Khong tim thay thong tin sinh vien chinh trung hop)                  |-";
+    }
+    std::cout << "\n-|-----|----------|--------------|----Ket qua gan dung-----|------------|-----------------|-";
+    if (sorted_key != 0b1'0'0'0'0)
+    {
+        for (Student& s : students)
+        {
+            if ((int)s.gpa  == (int)gpa_value)
+            {
+                _print_single_student(1,
+                    s.class_id,
+                    s.student_id,
+                    s.name,
+                    s.dob.day,
+                    s.dob.month,
+                    s.dob.year,
+                    s.gpa);
+                count++;
+            }
+        }
+        
+    }
+    else
+    {
+
+    }
+
+    if (count == 0)
+    {
+        std::cout << "\n-|                          (Khong tim thay thong tin sinh vien)                          |-";
+    }
+    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
 }
 
 // Return True if d1 is before d2
