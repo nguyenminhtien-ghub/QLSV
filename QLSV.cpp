@@ -1321,7 +1321,7 @@ void _search_result(const int year_value, const int month_value, const int day_v
                     }
 
                     // Find first index students who == search value
-                    while (mid > 0 && students[mid].dob.year == year_value && students[mid].dob.month == month_value)
+                    while (mid > 0 && students[mid - 1].dob.year == year_value && students[mid - 1].dob.month == month_value)
                     {
                         mid--;
 
@@ -1385,9 +1385,9 @@ void _search_result(const int year_value, const int month_value, const int day_v
 
                     // Find first index students who == search value
                     while (mid > 0
-                        && students[mid].dob.year == year_value
-                        && students[mid].dob.month == month_value
-                        && students[mid].dob.day == day_value)
+                        && students[mid - 1].dob.year == year_value
+                        && students[mid - 1].dob.month == month_value
+                        && students[mid - 1].dob.day == day_value)
                     {
                         mid--;
 
