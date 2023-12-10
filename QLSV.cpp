@@ -1261,7 +1261,7 @@ void _search_result(const int year_value, const int month_value, const int day_v
                     }
 
                     // Find first index students who == search value
-                    while (mid > 0 && students[mid].dob.year == year_value)
+                    while (mid > 0 && students[mid - 1].dob.year == year_value)
                     {
                         mid--;
 
@@ -1284,6 +1284,136 @@ void _search_result(const int year_value, const int month_value, const int day_v
             if (left <= right)
             {
                 while (students[mid].dob.year == year_value)
+                {
+                    count++;
+
+                    _print_single_student(count,
+                        students[mid].class_id,
+                        students[mid].student_id,
+                        students[mid].name,
+                        students[mid].dob.day,
+                        students[mid].dob.month,
+                        students[mid].dob.year,
+                        students[mid].gpa);
+                    mid++;
+                    if (mid >= students.size())
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+        else if (day_value == 0)
+        {
+            int left = 0;
+            int right = students.size() - 1;
+            int mid = -1;
+
+            while (left <= right)
+            {
+                mid = left + (right - left) / 2;
+
+                if (students[mid].dob.year == year_value && students[mid].dob.month == month_value)
+                {
+                    if (mid <= 0)
+                    {
+                        break;
+                    }
+
+                    // Find first index students who == search value
+                    while (mid > 0 && students[mid].dob.year == year_value && students[mid].dob.month == month_value)
+                    {
+                        mid--;
+
+                    }
+                    break;
+                }
+
+                else if (students[mid].dob.year < year_value
+                    || (students[mid].dob.year == year_value && students[mid].dob.month < month_value))
+                {
+                    left = mid + 1;
+                }
+
+                else
+                {
+                    right = mid - 1;
+                }
+            }
+
+            // If found student 
+            if (left <= right)
+            {
+                while (students[mid].dob.year == year_value && students[mid].dob.month == month_value)
+                {
+                    count++;
+
+                    _print_single_student(count,
+                        students[mid].class_id,
+                        students[mid].student_id,
+                        students[mid].name,
+                        students[mid].dob.day,
+                        students[mid].dob.month,
+                        students[mid].dob.year,
+                        students[mid].gpa);
+                    mid++;
+                    if (mid >= students.size())
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            int left = 0;
+            int right = students.size() - 1;
+            int mid = -1;
+
+            while (left <= right)
+            {
+                mid = left + (right - left) / 2;
+
+                if (students[mid].dob.year == year_value
+                    && students[mid].dob.month == month_value
+                    && students[mid].dob.day == day_value)
+                {
+                    if (mid <= 0)
+                    {
+                        break;
+                    }
+
+                    // Find first index students who == search value
+                    while (mid > 0
+                        && students[mid].dob.year == year_value
+                        && students[mid].dob.month == month_value
+                        && students[mid].dob.day == day_value)
+                    {
+                        mid--;
+
+                    }
+                    break;
+                }
+
+                else if (students[mid].dob.year < year_value
+                    || (students[mid].dob.year == year_value && students[mid].dob.month < month_value)
+                    || (students[mid].dob.year == year_value && students[mid].dob.month == month_value && students[mid].dob.day < day_value))
+                {
+                    left = mid + 1;
+                }
+
+                else
+                {
+                    right = mid - 1;
+                }
+            }
+
+            // If found student 
+            if (left <= right)
+            {
+                while (students[mid].dob.year == year_value
+                    && students[mid].dob.month == month_value
+                    && students[mid].dob.day == day_value)
                 {
                     count++;
 
@@ -1357,7 +1487,7 @@ void _search_result(const float gpa_value)
                 }
 
                 // Find first index students who == search value
-                while (mid > 0 && students[mid].gpa == gpa_value)
+                while (mid > 0 && students[mid - 1].gpa == gpa_value)
                 {
                     mid--;
 
