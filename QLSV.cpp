@@ -241,10 +241,10 @@ void list_students(const std::string table_title)
     std::vector<Student> students;
     load_student_list(students);
 
-    std::cout << "\n-***   ***   ***   ***   ***    " << table_title << "    ***   ***   ***   ***   ***-";
-    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
-    std::cout << "\n-| STT |  ma lop  | ma sinh vien |        ho va ten        | ngay sinh  | diem trung bing |-";
-    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+    std::cout << "\n-***   ***   ***   ***   ***    " << table_title << "     ***   ***   ***   ***   ***-";
+    std::cout << "\n-|-----|----------|--------------|--------------------------|------------|-----------------|-";
+    std::cout << "\n-| STT |  ma lop  | ma sinh vien |        ho va ten         | ngay sinh  | diem trung bing |-";
+    std::cout << "\n-|-----|----------|--------------|--------------------------|------------|-----------------|-";
     
     int i = 1;
 
@@ -261,7 +261,7 @@ void list_students(const std::string table_title)
         i++;
     }
 
-    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+    std::cout << "\n-|-----|----------|--------------|--------------------------|------------|-----------------|-";
 
     std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
     
@@ -455,8 +455,8 @@ void _statistics_quantity_by_class()
     std::cout << "\n    -|--------|--------------------|-";
     std::cout << "\n     | ma lop | so luong sinh vien |";
     std::cout << "\n     |  AAA17 |                 60 |";
-    std::cout << "\n     |  ABB17 |                 74 |";
-    std::cout << "\n     |  ABB17 |                 60 |";
+    std::cout << "\n     |  AAB17 |                 74 |";
+    std::cout << "\n     |  AAC17 |                 60 |";
     std::cout << "\n     |  ABB17 |                 77 |";
     std::cout << "\n    -|--------|--------------------|-";
     std::cout << "\n    -|  TONG  |                271 |-";
@@ -476,11 +476,11 @@ void _statistics_rank_students()
     std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
     std::cout << "\n     |  AAA17 |   5 |    8 |  11 |   18 |  24 |   40 |  17 |   28 |   3 |    5 |";
     std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
-    std::cout << "\n     |  AAA17 |   7 |    9 |   9 |   12 |  30 |   41 |  21 |   28 |   7 |    9 |";
+    std::cout << "\n     |  AAB17 |   7 |    9 |   9 |   12 |  30 |   41 |  21 |   28 |   7 |    9 |";
     std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
-    std::cout << "\n     |  AAA17 |   3 |    5 |  12 |   20 |  21 |   35 |  19 |   32 |   5 |    8 |";
+    std::cout << "\n     |  AAC17 |   3 |    5 |  12 |   20 |  21 |   35 |  19 |   32 |   5 |    8 |";
     std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
-    std::cout << "\n     |  AAA17 |   6 |    8 |  15 |   19 |  29 |   29 |  22 |   29 |   5 |    6 |";
+    std::cout << "\n     |  ABB17 |   6 |    8 |  15 |   19 |  29 |   29 |  22 |   29 |   5 |    6 |";
     std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
     std::cout << "\n     |  TONG  |  21 |    8 |  47 |   17 | 104 |   38 |  79 |   29 |  20 |    7 |";
     std::cout << "\n    -|-------------------------------------------------------------------------|-";
@@ -677,7 +677,7 @@ void _print_single_student(const int i, const std::string class_id, const std::s
     std::cout << i;
     std::cout << " | " << std::setw(8) << class_id;
     std::cout << " | " << std::setw(12) << student_id;
-    std::cout << " | " << std::setw(23) << std::left << name;
+    std::cout << " | " << std::setw(24) << std::left << name;
     std::cout << " | " << std::setw(2) << std::right << dob_day << "/" << std::setw(2) << dob_month << "/" << dob_year;
     std::cout << " | " << std::setw(15) << gpa << " |";
 }
@@ -1142,7 +1142,7 @@ void _search_info(const char key)
         float gpa_input;
         std::cout << "\nGia tri diem: ";
         std::cin >> gpa_input;
-        std::cout << "\n-***   ***   ***   ***   ***   ***    Ket qua tim kiem    ***   ***   ***   ***   ***   ***-";
+        std::cout << "\n-***   ***   ***   ***   ***   ***     Ket qua tim kiem    ***   ***   ***   ***   ***   ***-";
         _search_result(gpa_input);
 
         std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
@@ -1171,7 +1171,7 @@ void _search_result(const std::string search_value, const char key)
 
     if (count == 0)
     {
-        std::cout << "\n-|                          (Khong tim thay thong tin sinh vien)                          |-";
+        std::cout << "\n-|                           (Khong tim thay thong tin sinh vien)                          |-";
     }
     std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
 }
@@ -1182,8 +1182,8 @@ void _search_result(const int year_value, const int month_value, const int day_v
     std::vector<Student> students;
     load_student_list(students);
 
-    std::cout << "\n-***   ***   ***   ***   ***   ***    Ket qua tim kiem    ***   ***   ***   ***   ***   ***-";
-    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+    std::cout << "\n-***   ***   ***   ***   ***   ***    Ket qua tim kiem     ***   ***   ***   ***   ***   ***-";
+    std::cout << "\n-|-----|----------|--------------|--------------------------|------------|-----------------|-";
     if (sorted_key != 0b0'1'0'0'0)
     {
         if (month_value == 0 && day_value == 0)
@@ -1192,7 +1192,8 @@ void _search_result(const int year_value, const int month_value, const int day_v
             {
                 if (s.dob.year == year_value)
                 {
-                    _print_single_student(1,
+                    count++;
+                    _print_single_student(count,
                         s.class_id,
                         s.student_id,
                         s.name,
@@ -1200,7 +1201,6 @@ void _search_result(const int year_value, const int month_value, const int day_v
                         s.dob.month,
                         s.dob.year,
                         s.gpa);
-                    count++;
                 }
             }
         }
@@ -1210,7 +1210,8 @@ void _search_result(const int year_value, const int month_value, const int day_v
             {
                 if (s.dob.year == year_value && s.dob.month == month_value)
                 {
-                    _print_single_student(1,
+                    count++;
+                    _print_single_student(count,
                         s.class_id,
                         s.student_id,
                         s.name,
@@ -1218,7 +1219,6 @@ void _search_result(const int year_value, const int month_value, const int day_v
                         s.dob.month,
                         s.dob.year,
                         s.gpa);
-                    count++;
                 }
             }
         }
@@ -1228,7 +1228,8 @@ void _search_result(const int year_value, const int month_value, const int day_v
             {
                 if (s.dob.year == year_value && s.dob.month == month_value && s.dob.day == day_value)
                 {
-                    _print_single_student(1,
+                    count++;
+                    _print_single_student(count,
                         s.class_id,
                         s.student_id,
                         s.name,
@@ -1236,22 +1237,80 @@ void _search_result(const int year_value, const int month_value, const int day_v
                         s.dob.month,
                         s.dob.year,
                         s.gpa);
-                    count++;
                 }
             }
         }
     }
     else
     {
+        if (month_value == 0 && day_value == 0)
+        {
+            int left = 0;
+            int right = students.size() - 1;
+            int mid = -1;
 
+            while (left <= right)
+            {
+                mid = left + (right - left) / 2;
+
+                if (students[mid].dob.year == year_value)
+                {
+                    if (mid <= 0)
+                    {
+                        break;
+                    }
+
+                    // Find first index students who == search value
+                    while (mid > 0 && students[mid].dob.year == year_value)
+                    {
+                        mid--;
+
+                    }
+                    break;
+                }
+
+                else if (students[mid].dob.year < year_value)
+                {
+                    left = mid + 1;
+                }
+
+                else
+                {
+                    right = mid - 1;
+                }
+            }
+
+            // If found student 
+            if (left <= right)
+            {
+                while (students[mid].dob.year == year_value)
+                {
+                    count++;
+
+                    _print_single_student(count,
+                        students[mid].class_id,
+                        students[mid].student_id,
+                        students[mid].name,
+                        students[mid].dob.day,
+                        students[mid].dob.month,
+                        students[mid].dob.year,
+                        students[mid].gpa);
+                    mid++;
+                    if (mid >= students.size())
+                    {
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     if (count == 0)
     {
-        count = 0;
-        std::cout << "\n-|                  (Khong tim thay thong tin sinh vien chinh trung hop)                  |-";
+        std::cout << "\n-|                   (Khong tim thay thong tin sinh vien chinh trung hop)                  |-";
     }
-    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+    count = 0;
+    std::cout << "\n-|-----|----------|--------------|--------------------------|------------|-----------------|-";
 }
 
 void _search_result(const float gpa_value)
@@ -1260,14 +1319,16 @@ void _search_result(const float gpa_value)
     std::vector<Student> students;
     load_student_list(students);
 
-    std::cout << "\n-|-----|----------|--------------|---Ket qua chinh xac-----|------------|-----------------|-";
+    std::cout << "\n-|-----|----------|--------------|----Ket qua chinh xac-----|------------|-----------------|-";
+    // linear search if list not sorted by gpa
     if (sorted_key != 0b1'0'0'0'0)
     {
         for (Student& s : students)
         {
             if (s.gpa == gpa_value)
             {
-                _print_single_student(1,
+                count++;
+                _print_single_student(count,
                     s.class_id,
                     s.student_id,
                     s.name,
@@ -1275,28 +1336,84 @@ void _search_result(const float gpa_value)
                     s.dob.month,
                     s.dob.year,
                     s.gpa);
-                count++;
             }
         }
     }
     else
     {
+        int left = 0;
+        int right = students.size() - 1;
+        int mid = -1;
 
+        while (left <= right)
+        {
+            mid = left + (right - left) / 2;
+
+            if (students[mid].gpa == gpa_value)
+            {
+                if (mid <= 0)
+                {
+                    break;
+                }
+
+                // Find first index students who == search value
+                while (mid > 0 && students[mid].gpa == gpa_value)
+                {
+                    mid--;
+
+                }
+                break;
+            }
+
+            else if (students[mid].gpa < gpa_value)
+            {
+                left = mid + 1;
+            }
+
+            else
+            {
+                right = mid - 1;
+            }
+        }
+
+        // If found student 
+        if (left <= right)
+        {
+            while (students[mid].gpa == gpa_value)
+            {
+                count++;
+
+                _print_single_student(count,
+                    students[mid].class_id,
+                    students[mid].student_id,
+                    students[mid].name,
+                    students[mid].dob.day,
+                    students[mid].dob.month,
+                    students[mid].dob.year,
+                    students[mid].gpa);
+                mid++;
+                if (mid >= students.size())
+                {
+                    break;
+                }
+            }
+        }
     }
 
     if (count == 0)
     {
-        count = 0;
-        std::cout << "\n-|                  (Khong tim thay thong tin sinh vien chinh trung hop)                  |-";
+        std::cout << "\n-|                   (Khong tim thay thong tin sinh vien chinh trung hop)                  |-";
     }
-    std::cout << "\n-|-----|----------|--------------|----Ket qua gan dung-----|------------|-----------------|-";
+    count = 0;
+    std::cout << "\n-|-----|----------|--------------|-----Ket qua gan dung-----|------------|-----------------|-";
     if (sorted_key != 0b1'0'0'0'0)
     {
         for (Student& s : students)
         {
             if ((int)s.gpa  == (int)gpa_value)
             {
-                _print_single_student(1,
+                count++;
+                _print_single_student(count,
                     s.class_id,
                     s.student_id,
                     s.name,
@@ -1304,22 +1421,79 @@ void _search_result(const float gpa_value)
                     s.dob.month,
                     s.dob.year,
                     s.gpa);
-                count++;
             }
         }
         
     }
     else
     {
+        int left = 0;
+        int right = students.size() - 1;
+        int mid = -1;
 
+        while (left <= right)
+        {
+            mid = left + (right - left) / 2;
+
+            if ((int)students[mid].gpa == (int)gpa_value)
+            {
+                if (mid <= 0)
+                {
+                    break;
+                }
+
+                // Find first index students who == search value
+                while (mid > 0 && (int)students[mid - 1].gpa == (int)gpa_value)
+                {
+                    mid--;
+                    
+                }
+                break;
+            }
+
+            else if (students[mid].gpa < gpa_value)
+            {
+                left = mid + 1;
+            }
+
+            else
+            {
+                right = mid - 1;
+            }
+        }
+
+        // If found result
+        if (left <= right)
+        {
+            while ((int)students[mid].gpa == (int)gpa_value)
+            {
+                count++;
+                
+                _print_single_student(count,
+                    students[mid].class_id,
+                    students[mid].student_id,
+                    students[mid].name,
+                    students[mid].dob.day,
+                    students[mid].dob.month,
+                    students[mid].dob.year,
+                    students[mid].gpa);
+                mid++;
+                if (mid >= students.size())
+                {
+                    break;
+                }
+
+            }
+        }
     }
 
     if (count == 0)
     {
         std::cout << "\n-|                          (Khong tim thay thong tin sinh vien)                          |-";
     }
-    std::cout << "\n-|-----|----------|--------------|-------------------------|------------|-----------------|-";
+    std::cout << "\n-|-----|----------|--------------|--------------------------|------------|-----------------|-";
 }
+
 
 // Return True if d1 is before d2
 bool compare_date(const Date d1, const Date d2)
