@@ -322,21 +322,26 @@ void sort_students()
         std::cout << "\n>";
 
         key_choice = _getch();
+        std::cout << key_choice << "\n";
         switch (key_choice)
         {
         case STUDENT_KEY::CLASS_ID:
             table_title = "MENU | DS sinh vien theo lop";
+            break;
         case STUDENT_KEY::ID:
             table_title = "MENU | DSSV theo ma sinhvien";
+            break;
         case STUDENT_KEY::NAME:
             table_title = "MENU | DS sinh vien theo ten";
+            break;
         case STUDENT_KEY::DOB:
             table_title = " MENU | DSSV theo ngay sinh ";
+            break;
         case STUDENT_KEY::GPA:
             table_title = "    MENU | DSSV theo diem   ";
-            std::cout << key_choice << "\n";
             break;
         default:
+            std::cout << "\n";
             continue;
         }
         break;
