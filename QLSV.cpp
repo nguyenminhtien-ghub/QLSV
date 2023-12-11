@@ -454,6 +454,7 @@ void _statistics_quantity_by_class()
     std::cout << "\n\n  * Thong ke so luong sinh vien theo lop *  ";
     std::cout << "\n    -|--------|--------------------|-";
     std::cout << "\n     | ma lop | so luong sinh vien |";
+    std::cout << "\n    -|--------|--------------------|-";
     std::cout << "\n     |  AAA17 |                 60 |";
     std::cout << "\n     |  AAB17 |                 74 |";
     std::cout << "\n     |  AAC17 |                 60 |";
@@ -1179,6 +1180,66 @@ void _search_result(const std::string search_value, const char key)
                 }
             }
         }
+        else
+        {
+            int left = 0;
+            int right = students.size() - 1;
+            int mid = -1;
+
+            while (left <= right)
+            {
+                mid = left + (right - left) / 2;
+
+                if (students[mid].class_id == search_value)
+                {
+                    if (mid <= 0)
+                    {
+                        break;
+                    }
+
+                    // Find first index students who == search value
+                    while (mid > 0 && students[mid - 1].class_id == search_value)
+                    {
+                        mid--;
+
+                    }
+                    break;
+                }
+
+                else if (students[mid].class_id < search_value)
+                {
+                    left = mid + 1;
+                }
+
+                else
+                {
+                    right = mid - 1;
+                }
+            }
+
+            // If found student 
+            if (left <= right)
+            {
+                while (students[mid].class_id == search_value)
+                {
+                    count++;
+
+                    _print_single_student(count,
+                        students[mid].class_id,
+                        students[mid].student_id,
+                        students[mid].name,
+                        students[mid].dob.day,
+                        students[mid].dob.month,
+                        students[mid].dob.year,
+                        students[mid].gpa);
+                    mid++;
+                    if (mid >= students.size())
+                    {
+                        break;
+                    }
+                }
+            }
+        }
 
 
     }
@@ -1202,6 +1263,40 @@ void _search_result(const std::string search_value, const char key)
                 }
             }
         }
+        else
+        {
+            int left = 0;
+            int right = students.size() - 1;
+            int mid = -1;
+
+            while (left <= right)
+            {
+                mid = left + (right - left) / 2;
+
+                if (students[mid].student_id == search_value)
+                {
+                    _print_single_student(1,
+                        students[mid].class_id,
+                        students[mid].student_id,
+                        students[mid].name,
+                        students[mid].dob.day,
+                        students[mid].dob.month,
+                        students[mid].dob.year,
+                        students[mid].gpa);
+                    break;
+                }
+
+                else if (students[mid].student_id < search_value)
+                {
+                    left = mid + 1;
+                }
+
+                else
+                {
+                    right = mid - 1;
+                }
+            }
+        }
         
     }
     // key == name
@@ -1222,6 +1317,66 @@ void _search_result(const std::string search_value, const char key)
                         s.dob.month,
                         s.dob.year,
                         s.gpa);
+                }
+            }
+        }
+        else
+        {
+            int left = 0;
+            int right = students.size() - 1;
+            int mid = -1;
+
+            while (left <= right)
+            {
+                mid = left + (right - left) / 2;
+
+                if (students[mid].name == search_value)
+                {
+                    if (mid <= 0)
+                    {
+                        break;
+                    }
+
+                    // Find first index students who == search value
+                    while (mid > 0 && students[mid - 1].name == search_value)
+                    {
+                        mid--;
+
+                    }
+                    break;
+                }
+
+                else if (students[mid].name < search_value)
+                {
+                    left = mid + 1;
+                }
+
+                else
+                {
+                    right = mid - 1;
+                }
+            }
+
+            // If found student 
+            if (left <= right)
+            {
+                while (students[mid].name == search_value)
+                {
+                    count++;
+
+                    _print_single_student(count,
+                        students[mid].class_id,
+                        students[mid].student_id,
+                        students[mid].name,
+                        students[mid].dob.day,
+                        students[mid].dob.month,
+                        students[mid].dob.year,
+                        students[mid].gpa);
+                    mid++;
+                    if (mid >= students.size())
+                    {
+                        break;
+                    }
                 }
             }
         }
