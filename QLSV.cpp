@@ -101,6 +101,7 @@ void load_student_list(std::vector<Student> &students);
 void _print_single_student(const int i, const std::string class_id, const std::string student_id, const std::string name, const int dob_day, const int dob_month, const int dob_year, const float gpa);
 
 void sort_students();
+void set_sorted_key(std::bitset<5> keys, const char key_choice);
 void selection_sort(const char key);
 void bubble_sort(const char key);
 void quicksort(const char key);
@@ -358,26 +359,7 @@ void sort_students()
         mergesort(key_choice);
     }
 
-    if (key_choice == STUDENT_KEY::CLASS_ID)
-    {
-        sorted_key = 0b0'0'0'0'1;
-    }
-    else if (key_choice == STUDENT_KEY::ID)
-    {
-        sorted_key = 0b0'0'0'1'0;
-    }
-    else if (key_choice == STUDENT_KEY::NAME)
-    {
-        sorted_key = 0b0'0'1'0'0;
-    }
-    else if (key_choice == STUDENT_KEY::DOB)
-    {
-        sorted_key = 0b0'1'0'0'0;
-    }
-    else if (key_choice == STUDENT_KEY::GPA)
-    {
-        sorted_key = 0b1'0'0'0'0;
-    }
+    set_sorted_key(sorted_key, key_choice);
 
     list_students(table_title);
 }
@@ -420,6 +402,93 @@ void search_students()
     
 
     //list_students("  MENU  | Ket qua tim kiem  ");
+}
+
+void _search_info(const char key)
+{
+    char return_to_main;
+    if (key == STUDENT_KEY::CLASS_ID || key == STUDENT_KEY::ID || key == STUDENT_KEY::NAME)
+    {
+        std::string search_value;
+        std::cout << "\n\nTim kiem: ";
+        std::getline(std::cin, search_value);
+        search_value = trim_start(search_value);
+        search_value = trim_end(search_value);
+
+        std::cout << "\n-***   ***   ***   ***   ***   ***    Ket qua tim kiem     ***   ***   ***   ***   ***   ***-";
+        _search_result(search_value, key);
+
+        std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
+
+        return_to_main = _getch();
+        return;
+    }
+
+    if (key == STUDENT_KEY::DOB)
+    {
+        int day_value = 0;
+        int month_value = 0;
+        int year_value = 0;
+
+        std::cout << "\n";
+
+        while (true)
+        {
+            std::cout << "\nTim kiem (nhap 0 de bo qua ngay hoac thang)";
+            std::cout << "\n   - ngay: ";
+            std::cin >> day_value;
+            std::cout << "   - thang: ";
+            std::cin >> month_value;
+            std::cout << "   - nam: ";
+            std::cin >> year_value;
+
+            if (day_value == 0 && month_value == 0)
+            {
+                _search_result(year_value);
+                break;
+            }
+            if (day_value == 0)
+            {
+                if (_validate_month(month_value) == false)
+                {
+                    std::cout << "\nThang khong hop le.";
+                    continue;
+                }
+                _search_result(year_value, month_value);
+                break;
+            }
+
+            if (_validate_date(day_value, month_value, year_value))
+            {
+                _search_result(year_value, month_value, day_value);
+                break;
+            }
+            else
+            {
+                std::cout << "\nThoi gian khong hop le.";
+            }
+        }
+
+
+        std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
+
+        return_to_main = _getch();
+        return;
+    }
+
+    if (key == STUDENT_KEY::GPA)
+    {
+        float gpa_input;
+        std::cout << "\nGia tri diem: ";
+        std::cin >> gpa_input;
+        std::cout << "\n-***   ***   ***   ***   ***   ***     Ket qua tim kiem    ***   ***   ***   ***   ***   ***-";
+        _search_result(gpa_input);
+
+        std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
+
+        return_to_main = _getch();
+        return;
+    }
 }
 
 void statistics_student()
@@ -681,6 +750,30 @@ void _print_single_student(const int i, const std::string class_id, const std::s
     std::cout << " | " << std::setw(24) << std::left << name;
     std::cout << " | " << std::setw(2) << std::right << dob_day << "/" << std::setw(2) << dob_month << "/" << dob_year;
     std::cout << " | " << std::setw(15) << gpa << " |";
+}
+
+void set_sorted_key(std::bitset<5> keys, const char key_choice)
+{
+    if (key_choice == STUDENT_KEY::CLASS_ID)
+    {
+        sorted_key = 0b0'0'0'0'1;
+    }
+    else if (key_choice == STUDENT_KEY::ID)
+    {
+        sorted_key = 0b0'0'0'1'0;
+    }
+    else if (key_choice == STUDENT_KEY::NAME)
+    {
+        sorted_key = 0b0'0'1'0'0;
+    }
+    else if (key_choice == STUDENT_KEY::DOB)
+    {
+        sorted_key = 0b0'1'0'0'0;
+    }
+    else if (key_choice == STUDENT_KEY::GPA)
+    {
+        sorted_key = 0b1'0'0'0'0;
+    }
 }
 
 void selection_sort(const char key)
@@ -1063,93 +1156,6 @@ void _merge(std::vector<Student>& students, int left, int middle, int right, con
         students[k] = right_list[j];
         j++;
         k++;
-    }
-}
-
-void _search_info(const char key)
-{
-    char return_to_main;
-    if (key == STUDENT_KEY::CLASS_ID || key == STUDENT_KEY::ID || key == STUDENT_KEY::NAME)
-    {
-        std::string search_value;
-        std::cout << "\n\nTim kiem: ";
-        std::getline(std::cin, search_value);
-        search_value = trim_start(search_value);
-        search_value = trim_end(search_value);
-
-        std::cout << "\n-***   ***   ***   ***   ***   ***    Ket qua tim kiem     ***   ***   ***   ***   ***   ***-";
-        _search_result(search_value, key);
-
-        std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
-
-        return_to_main = _getch();
-        return;
-    }
-
-    if (key == STUDENT_KEY::DOB)
-    {
-        int day_value = 0;
-        int month_value = 0;
-        int year_value = 0;
-        
-        std::cout << "\n";
-        
-        while (true)
-        {
-            std::cout << "\nTim kiem (nhap 0 de bo qua ngay hoac thang)";
-            std::cout << "\n   - ngay: ";
-            std::cin >> day_value;
-            std::cout << "   - thang: ";
-            std::cin >> month_value;
-            std::cout << "   - nam: ";
-            std::cin >> year_value;
-
-            if (day_value == 0 && month_value == 0)
-            {
-                _search_result(year_value);
-                break;
-            }
-            if (day_value == 0)
-            {
-                if (_validate_month(month_value) == false)
-                {
-                    std::cout << "\nThang khong hop le.";
-                    continue;
-                }
-                _search_result(year_value, month_value);
-                break;
-            }
-
-            if (_validate_date(day_value, month_value, year_value))
-            {
-                _search_result(year_value, month_value, day_value);
-                break;
-            }
-            else
-            {
-                std::cout << "\nThoi gian khong hop le.";
-            }
-        }
-        
-
-        std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
-
-        return_to_main = _getch();
-        return;
-    }
-
-    if (key == STUDENT_KEY::GPA)
-    {
-        float gpa_input;
-        std::cout << "\nGia tri diem: ";
-        std::cin >> gpa_input;
-        std::cout << "\n-***   ***   ***   ***   ***   ***     Ket qua tim kiem    ***   ***   ***   ***   ***   ***-";
-        _search_result(gpa_input);
-
-        std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
-
-        return_to_main = _getch();
-        return;
     }
 }
 
@@ -1902,34 +1908,18 @@ void _search_result(const float gpa_value)
 // Return True if d1 is before d2
 bool compare_date(const Date d1, const Date d2)
 {
-    if (d1.year < d2.year)
+    if (d1.year != d2.year)
     {
-        return true;
+        return d1.year < d2.year;
     }
-    else if (d1.year > d2.year)
+    
+    if (d1.month != d2.month)
     {
-        return false;
+        return d1.month < d2.month;
     }
-    else
-    {
-        if (d1.month < d2.month)
-        {
-            return true;
-        }
-        else if(d1.month > d2.month)
-        {
-            return false;
-        }
-        else
-        {
-            if (d1.day < d2.day)
-            {
-                return true;
-            }
 
-            return false;
-        }
-    }
+    return d1.day < d2.day;
+
 }
 
 
