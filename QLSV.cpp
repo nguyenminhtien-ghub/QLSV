@@ -1513,7 +1513,7 @@ void _search_result(const int year_value, const int month_value, const int day_v
                         && students[mid].dob.day == day_value;
                 }
                 
-            } while (mid < students.size() || is_prev_date_equal);
+            } while (mid <= students.size() || is_date_equal);
         }
     }
 
