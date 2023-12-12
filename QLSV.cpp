@@ -105,11 +105,12 @@ void set_sorted_key(std::bitset<5> keys, const char key_choice);
 void selection_sort(const char key);
 void bubble_sort(const char key);
 void quicksort(const char key);
-void _quicksort(std::vector<Student>& students, int low, int high, const char key);
-int _partition_student_list(std::vector<Student>& students, int low, int high, const char key);
+void _quicksort(std::vector<Student>& students, size_t low, size_t high, const char key);
+size_t _partition_student_list(std::vector<Student>& students, int low, int high, const char key);
 void mergesort(const char key);
-void _mergesort(std::vector<Student>& B_list, std::vector<Student>& A_list, int left, int right, const char key);
+void _mergesort(std::vector<Student>& B_list, std::vector<Student>& A_list, size_t left, size_t right, const char key);
 void _merge(std::vector<Student>& B_list, std::vector<Student>& A_list, int left, int middle, int right, const char key);
+void _merge_list_by_key(const char& key, std::vector<Student>& A_list, int& i, int& j, int middle, int right, std::vector<Student>& B_list, int k);
 bool compare_date(const Date d1, const Date d2);
 
 void search_students();
@@ -907,7 +908,7 @@ void bubble_sort(const char key)
 void quicksort(const char key)
 {
     std::vector<Student> students;
-    int low = 0;
+    size_t low = 0;
 
     load_student_list(students);
 
@@ -918,12 +919,12 @@ void quicksort(const char key)
 
 }
 
-void _quicksort(std::vector<Student>& students, int low, int high, const char key)
+void _quicksort(std::vector<Student>& students, size_t low, size_t high, const char key)
 {
     
     if (low < high)
     {
-        int pivot_index = _partition_student_list(students, low, high, key);
+        size_t pivot_index = _partition_student_list(students, low, high, key);
         _quicksort(students, low, pivot_index - 1, key);
         _quicksort(students, pivot_index + 1, high, key);
     }
@@ -931,9 +932,9 @@ void _quicksort(std::vector<Student>& students, int low, int high, const char ke
 
 
 // Function to partition the list for quicksort
-int _partition_student_list(std::vector<Student>& students, int low, int high, const char key)
+size_t _partition_student_list(std::vector<Student>& students, int low, int high, const char key)
 {
-    int i = low - 1;
+    size_t i = low - 1;
 
     if (key == STUDENT_KEY::CLASS_ID)
     {
@@ -1032,14 +1033,14 @@ void mergesort(const char key)
 }
 
 
-void _mergesort(std::vector<Student>& B_list, std::vector<Student>& A_list, int left, int right, const char key)
+void _mergesort(std::vector<Student>& B_list, std::vector<Student>& A_list, size_t left, size_t right, const char key)
 {
     if (right - left <= 1)
     {
         return;
     }
 
-    int middle = left + (right - left) / 2;
+    size_t middle = left + (right - left) / 2;
     _mergesort(A_list, B_list, left, middle, key);
     _mergesort(A_list, B_list, middle, right, key);
     
@@ -1053,8 +1054,8 @@ void _merge(std::vector<Student>& B_list, std::vector<Student>& A_list, int left
 
     for (int k = left; k < right; k++)
     {
-        if (key == STUDENT_KEY::CLASS_ID)
-        if (i < middle
+        _merge_list_by_key(key, A_list, i, j, middle, right, B_list, k);
+        /*if (i < middle
             && (j >= right || A_list[i].class_id <= A_list[j].class_id))
         {
             B_list[k] = A_list[i];
@@ -1064,7 +1065,45 @@ void _merge(std::vector<Student>& B_list, std::vector<Student>& A_list, int left
         {
             B_list[k] = A_list[j];
             j++;
-        }
+        }*/
+    }
+}
+
+void _merge_list_by_key(const char& key, std::vector<Student>& A_list, int& i, int& j, int middle, int right, std::vector<Student>& B_list, int k)
+{
+    bool is_lesser_or_equal_right_head;
+
+    if (key == STUDENT_KEY::CLASS_ID)
+    {
+        is_lesser_or_equal_right_head = j >= right || A_list[i].class_id <= A_list[j].class_id;
+    }
+    else if (key == STUDENT_KEY::ID)
+    {
+        is_lesser_or_equal_right_head = j >= right || A_list[i].student_id <= A_list[j].student_id;
+    }
+    else if (key == STUDENT_KEY::NAME)
+    {
+        is_lesser_or_equal_right_head = j >= right || A_list[i].name <= A_list[j].name;
+    }
+    else if (key == STUDENT_KEY::DOB)
+    {
+        is_lesser_or_equal_right_head = j >= right || compare_date(A_list[j].dob, A_list[i].dob) == false;
+    }
+    else
+    {
+        is_lesser_or_equal_right_head = j >= right || A_list[i].gpa <= A_list[j].gpa;
+    }
+
+    if (i < middle
+        && (is_lesser_or_equal_right_head))
+    {
+        B_list[k] = A_list[i];
+        i++;
+    }
+    else
+    {
+        B_list[k] = A_list[j];
+        j++;
     }
 }
 
@@ -1661,7 +1700,7 @@ void _search_result(const float gpa_value)
     else
     {
         int left = 0;
-        int right = students.size() - 1;
+        size_t right = students.size() - 1;
         int mid = -1;
 
         while (left <= right)
@@ -1747,7 +1786,7 @@ void _search_result(const float gpa_value)
     else
     {
         int left = 0;
-        int right = students.size() - 1;
+        size_t right = students.size() - 1;
         int mid = -1;
 
         while (left <= right)
