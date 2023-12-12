@@ -114,6 +114,7 @@ void _mergesort(std::vector<Student>& B_list, std::vector<Student>& A_list, size
 void _merge(std::vector<Student>& B_list, std::vector<Student>& A_list, int left, int middle, int right, const char key);
 void _merge_list_by_key(const char& key, std::vector<Student>& A_list, int& i, int& j, int middle, int right, std::vector<Student>& B_list, int k);
 bool compare_date(const Date d1, const Date d2);
+bool compare_date(const int year_value1, const int year_value2, const int month_value1 = 0, const int month_value2 = 0, const int day_value1 = 0, const int day_value2 = 0);
 
 void search_students();
 void _search_info(const char key);
@@ -425,14 +426,8 @@ void _search_info(const char key)
 
         std::cout << "\n-***   ***   ***   ***   ***   ***    Ket qua tim kiem     ***   ***   ***   ***   ***   ***-";
         _search_result(search_value, key);
-
-        std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
-
-        return_to_main = _getch();
-        return;
     }
-
-    if (key == STUDENT_KEY::DOB)
+    else if (key == STUDENT_KEY::DOB)
     {
         int day_value = 0;
         int month_value = 0;
@@ -476,27 +471,19 @@ void _search_info(const char key)
                 std::cout << "\nThoi gian khong hop le.";
             }
         }
-
-
-        std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
-
-        return_to_main = _getch();
-        return;
     }
-
-    if (key == STUDENT_KEY::GPA)
+    else if (key == STUDENT_KEY::GPA)
     {
         float gpa_input;
         std::cout << "\nGia tri diem: ";
         std::cin >> gpa_input;
         std::cout << "\n-***   ***   ***   ***   ***   ***     Ket qua tim kiem    ***   ***   ***   ***   ***   ***-";
         _search_result(gpa_input);
-
-        std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
-
-        return_to_main = _getch();
-        return;
     }
+
+    std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
+
+    return_to_main = _getch();
 }
 
 void statistics_student()
@@ -1381,6 +1368,8 @@ void _search_result(const std::string search_value, const char key)
 void _search_result(const int year_value, const int month_value, const int day_value)
 {
     int count = 0;
+    const bool is_only_year = month_value == 0 && day_value == 0;
+    const bool is_day_not_assign = year_value != 0 && month_value != 0;
     std::vector<Student> students;
     load_student_list(students);
 
@@ -1388,252 +1377,143 @@ void _search_result(const int year_value, const int month_value, const int day_v
     std::cout << "\n-|-----|----------|--------------|--------------------------|------------|-----------------|-";
     if (sorted_key != 0b0'1'0'0'0)
     {
-        if (month_value == 0 && day_value == 0)
+        bool is_date_equal;
+        for (Student& s : students)
         {
-            for (Student& s : students)
+            if (month_value == 0 && day_value == 0)
             {
-                if (s.dob.year == year_value)
-                {
-                    count++;
-                    _print_single_student(count,
-                        s.class_id,
-                        s.student_id,
-                        s.name,
-                        s.dob.day,
-                        s.dob.month,
-                        s.dob.year,
-                        s.gpa);
-                }
+                is_date_equal = s.dob.year == year_value;
             }
-        }
-        else if (day_value == 0)
-        {
-            for (Student& s : students)
+            else if (day_value == 0)
             {
-                if (s.dob.year == year_value && s.dob.month == month_value)
-                {
-                    count++;
-                    _print_single_student(count,
-                        s.class_id,
-                        s.student_id,
-                        s.name,
-                        s.dob.day,
-                        s.dob.month,
-                        s.dob.year,
-                        s.gpa);
-                }
+                is_date_equal = s.dob.year == year_value && s.dob.month == month_value;
             }
-        }
-        else
-        {
-            for (Student& s : students)
+            else
             {
-                if (s.dob.year == year_value && s.dob.month == month_value && s.dob.day == day_value)
-                {
-                    count++;
-                    _print_single_student(count,
-                        s.class_id,
-                        s.student_id,
-                        s.name,
-                        s.dob.day,
-                        s.dob.month,
-                        s.dob.year,
-                        s.gpa);
-                }
+                is_date_equal = s.dob.year == year_value && s.dob.month == month_value && s.dob.day == day_value;
+            }
+
+            if (is_date_equal)
+            {
+                count++;
+                _print_single_student(count,
+                    s.class_id,
+                    s.student_id,
+                    s.name,
+                    s.dob.day,
+                    s.dob.month,
+                    s.dob.year,
+                    s.gpa);
             }
         }
     }
     else
     {
-        if (month_value == 0 && day_value == 0)
+        int left = 0;
+        int right = students.size() - 1;
+        int mid = -1;
+        bool is_date_equal;
+        bool is_date_before;
+        bool is_prev_date_equal;
+
+        while (left <= right)
         {
-            int left = 0;
-            int right = students.size() - 1;
-            int mid = -1;
+            mid = left + (right - left) / 2;
 
-            while (left <= right)
+            if (is_only_year)
             {
-                mid = left + (right - left) / 2;
-
-                if (students[mid].dob.year == year_value)
-                {
-                    if (mid <= 0)
-                    {
-                        break;
-                    }
-
-                    // Find first index students who == search value
-                    while (mid > 0 && students[mid - 1].dob.year == year_value)
-                    {
-                        mid--;
-
-                    }
-                    break;
-                }
-
-                else if (students[mid].dob.year < year_value)
-                {
-                    left = mid + 1;
-                }
-
-                else
-                {
-                    right = mid - 1;
-                }
+                is_date_equal = students[mid].dob.year == year_value;
+                is_date_before = students[mid].dob.year < year_value;
+            }
+            else if (is_day_not_assign)
+            {
+                is_date_equal = students[mid].dob.year == year_value && students[mid].dob.month == month_value;
+                is_date_before = compare_date(students[mid].dob.year, year_value, students[mid].dob.month, month_value);
+            }
+            else
+            {
+                is_date_equal = students[mid].dob.year == year_value
+                    && students[mid].dob.month == month_value
+                    && students[mid].dob.day == day_value;
+                Date d;
+                d.year = year_value;
+                d.month = month_value;
+                d.day = day_value;
+                is_date_before = compare_date(students[mid].dob, d);
             }
 
-            // If found student 
-            if (left <= right)
+            if (is_date_equal)
             {
-                while (students[mid].dob.year == year_value)
-                {
-                    count++;
-
-                    _print_single_student(count,
-                        students[mid].class_id,
-                        students[mid].student_id,
-                        students[mid].name,
-                        students[mid].dob.day,
-                        students[mid].dob.month,
-                        students[mid].dob.year,
-                        students[mid].gpa);
-                    mid++;
-                    if (mid >= students.size())
-                    {
-                        break;
-                    }
-                }
+                break;
+            }
+            else if (is_date_before)
+            {
+                left = mid + 1;
+            }
+            else
+            {
+                right = mid - 1;
             }
         }
-        else if (day_value == 0)
+
+        // Find first index students who == search value
+        while (mid > 0)
         {
-            int left = 0;
-            int right = students.size() - 1;
-            int mid = -1;
-
-            while (left <= right)
+            if (is_only_year)
             {
-                mid = left + (right - left) / 2;
-
-                if (students[mid].dob.year == year_value && students[mid].dob.month == month_value)
-                {
-                    if (mid <= 0)
-                    {
-                        break;
-                    }
-
-                    // Find first index students who == search value
-                    while (mid > 0 && students[mid - 1].dob.year == year_value && students[mid - 1].dob.month == month_value)
-                    {
-                        mid--;
-
-                    }
-                    break;
-                }
-
-                else if (students[mid].dob.year < year_value
-                    || (students[mid].dob.year == year_value && students[mid].dob.month < month_value))
-                {
-                    left = mid + 1;
-                }
-
-                else
-                {
-                    right = mid - 1;
-                }
+                is_prev_date_equal = students[mid - 1].dob.year == year_value;
             }
-
-            // If found student 
-            if (left <= right)
+            else if (is_day_not_assign)
             {
-                while (students[mid].dob.year == year_value && students[mid].dob.month == month_value)
-                {
-                    count++;
-
-                    _print_single_student(count,
-                        students[mid].class_id,
-                        students[mid].student_id,
-                        students[mid].name,
-                        students[mid].dob.day,
-                        students[mid].dob.month,
-                        students[mid].dob.year,
-                        students[mid].gpa);
-                    mid++;
-                    if (mid >= students.size())
-                    {
-                        break;
-                    }
-                }
+                is_prev_date_equal = students[mid - 1].dob.year == year_value && students[mid - 1].dob.month == month_value;
             }
+            else
+            {
+                Date d;
+                d.year = year_value;
+                d.month = month_value;
+                d.day = day_value;
+                is_date_before = compare_date(students[mid - 1].dob, d);
+            }
+            if (is_prev_date_equal == false)
+            {
+                break;
+            }
+            mid--;
         }
-        else
+
+        if (left <= right)
         {
-            int left = 0;
-            int right = students.size() - 1;
-            int mid = -1;
-
-            while (left <= right)
+            do 
             {
-                mid = left + (right - left) / 2;
+                count++;
 
-                if (students[mid].dob.year == year_value
-                    && students[mid].dob.month == month_value
-                    && students[mid].dob.day == day_value)
+                _print_single_student(count,
+                    students[mid].class_id,
+                    students[mid].student_id,
+                    students[mid].name,
+                    students[mid].dob.day,
+                    students[mid].dob.month,
+                    students[mid].dob.year,
+                    students[mid].gpa);
+                mid++;
+
+                if (is_only_year)
                 {
-                    if (mid <= 0)
-                    {
-                        break;
-                    }
-
-                    // Find first index students who == search value
-                    while (mid > 0
-                        && students[mid - 1].dob.year == year_value
-                        && students[mid - 1].dob.month == month_value
-                        && students[mid - 1].dob.day == day_value)
-                    {
-                        mid--;
-
-                    }
-                    break;
+                    is_date_equal = students[mid].dob.year == year_value;
                 }
-
-                else if (students[mid].dob.year < year_value
-                    || (students[mid].dob.year == year_value && students[mid].dob.month < month_value)
-                    || (students[mid].dob.year == year_value && students[mid].dob.month == month_value && students[mid].dob.day < day_value))
+                else if (is_day_not_assign)
                 {
-                    left = mid + 1;
+                    is_date_equal = students[mid].dob.year == year_value && students[mid].dob.month == month_value;
                 }
-
                 else
                 {
-                    right = mid - 1;
+                    is_date_equal = students[mid].dob.year == year_value
+                        && students[mid].dob.month == month_value
+                        && students[mid].dob.day == day_value;
                 }
-            }
-
-            // If found student 
-            if (left <= right)
-            {
-                while (students[mid].dob.year == year_value
-                    && students[mid].dob.month == month_value
-                    && students[mid].dob.day == day_value)
-                {
-                    count++;
-
-                    _print_single_student(count,
-                        students[mid].class_id,
-                        students[mid].student_id,
-                        students[mid].name,
-                        students[mid].dob.day,
-                        students[mid].dob.month,
-                        students[mid].dob.year,
-                        students[mid].gpa);
-                    mid++;
-                    if (mid >= students.size())
-                    {
-                        break;
-                    }
-                }
-            }
+                
+            } while (mid < students.size() || is_prev_date_equal);
         }
     }
 
@@ -1652,7 +1532,8 @@ void _search_result(const float gpa_value)
 
     std::cout << "\n-|-----|----------|--------------|----Ket qua chinh xac-----|------------|-----------------|-";
     // linear search if list not sorted by gpa
-    if (sorted_key != 0b1'0'0'0'0)
+    const bool is_sort_by_gpa = sorted_key != 0b1'0'0'0'0;
+    if (is_sort_by_gpa)
     {
         for (Student& s : students)
         {
@@ -1682,17 +1563,6 @@ void _search_result(const float gpa_value)
 
             if (students[mid].gpa == gpa_value)
             {
-                if (mid <= 0)
-                {
-                    break;
-                }
-
-                // Find first index students who == search value
-                while (mid > 0 && students[mid - 1].gpa == gpa_value)
-                {
-                    mid--;
-
-                }
                 break;
             }
 
@@ -1705,6 +1575,12 @@ void _search_result(const float gpa_value)
             {
                 right = mid - 1;
             }
+        }
+
+        // Find first index students who == search value
+        while (mid > 0 && students[mid - 1].gpa == gpa_value)
+        {
+            mid--;
         }
 
         // If found student 
@@ -1737,7 +1613,7 @@ void _search_result(const float gpa_value)
     }
     count = 0;
     std::cout << "\n-|-----|----------|--------------|-----Ket qua gan dung-----|------------|-----------------|-";
-    if (sorted_key != 0b1'0'0'0'0)
+    if (is_sort_by_gpa)
     {
         for (Student& s : students)
         {
@@ -1843,4 +1719,19 @@ bool compare_date(const Date d1, const Date d2)
 
 }
 
+// Return True if d1 is before d2
+bool compare_date(const int year_value1, const int year_value2, const int month_value1, const int month_value2, const int day_value1, const int day_value2)
+{
+    if (year_value1 != year_value2)
+    {
+        return year_value1 < year_value2;
+    }
+
+    if (month_value1 != month_value2)
+    {
+        return month_value1 < month_value2;
+    }
+
+    return day_value1 < day_value2;
+}
 
