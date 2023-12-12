@@ -121,7 +121,8 @@ void _search_info(const char key);
 void _search_result(const std::string search_value, const char key);
 void _search_result(const int year_value, const int month_value = 0, const int day_value = 0);
 void _search_result(const float gpa_value);
-void _search_result_number(int count, const float gpa_value, const bool is_exactly = true);
+void _linear_search_number(const float gpa_value, const bool is_exactly = true);
+void _binary_search_number(const float gpa_value, const bool is_exactly = true);
 
 void statistics_student();
 void _statistics_quantity_by_class();
@@ -1415,7 +1416,6 @@ void _search_result(const int year_value, const int month_value, const int day_v
         int mid = -1;
         bool is_date_equal;
         bool is_date_before;
-        bool is_prev_date_equal;
 
         while (left <= right)
         {
@@ -1460,13 +1460,15 @@ void _search_result(const int year_value, const int month_value, const int day_v
         // Find first index students who == search value
         while (mid > 0)
         {
-            if (is_only_year)
+            if (is_only_year && students[mid - 1].dob.year == year_value)
             {
-                is_prev_date_equal = students[mid - 1].dob.year == year_value;
+                mid--;
+                continue;
             }
-            else if (is_day_not_assign)
+            else if (is_day_not_assign && (students[mid - 1].dob.year == year_value && students[mid - 1].dob.month == month_value))
             {
-                is_prev_date_equal = students[mid - 1].dob.year == year_value && students[mid - 1].dob.month == month_value;
+                mid--;
+                continue;
             }
             else
             {
@@ -1474,13 +1476,12 @@ void _search_result(const int year_value, const int month_value, const int day_v
                 d.year = year_value;
                 d.month = month_value;
                 d.day = day_value;
-                is_date_before = compare_date(students[mid - 1].dob, d);
+                if (compare_date(students[mid - 1].dob, d) == false)
+                {
+                    break;
+                }
+                mid--;
             }
-            if (is_prev_date_equal == false)
-            {
-                break;
-            }
-            mid--;
         }
 
         if (left <= right)
@@ -1514,7 +1515,7 @@ void _search_result(const int year_value, const int month_value, const int day_v
                         && students[mid].dob.day == day_value;
                 }
                 
-            } while (mid <= students.size() || is_date_equal);
+            } while (mid < students.size() && is_date_equal);
         }
     }
 
@@ -1527,167 +1528,33 @@ void _search_result(const int year_value, const int month_value, const int day_v
 
 void _search_result(const float gpa_value)
 {
-    int count = 0;
-
     std::cout << "\n-|-----|----------|--------------|----Ket qua chinh xac-----|------------|-----------------|-";
     // linear search if list not sorted by gpa
     const bool is_sort_by_gpa = sorted_key != 0b1'0'0'0'0;
     if (is_sort_by_gpa)
     {
-
+        _linear_search_number(gpa_value, true);
     }
     else
     {
-        int left = 0;
-        size_t right = students.size() - 1;
-        int mid = -1;
-
-        while (left <= right)
-        {
-            mid = left + (right - left) / 2;
-
-            if (students[mid].gpa == gpa_value)
-            {
-                break;
-            }
-
-            else if (students[mid].gpa < gpa_value)
-            {
-                left = mid + 1;
-            }
-
-            else
-            {
-                right = mid - 1;
-            }
-        }
-
-        // Find first index students who == search value
-        while (mid > 0 && students[mid - 1].gpa == gpa_value)
-        {
-            mid--;
-        }
-
-        // If found student 
-        if (left <= right)
-        {
-            while (students[mid].gpa == gpa_value)
-            {
-                count++;
-
-                _print_single_student(count,
-                    students[mid].class_id,
-                    students[mid].student_id,
-                    students[mid].name,
-                    students[mid].dob.day,
-                    students[mid].dob.month,
-                    students[mid].dob.year,
-                    students[mid].gpa);
-                mid++;
-                if (mid >= students.size())
-                {
-                    break;
-                }
-            }
-        }
+        _binary_search_number(gpa_value, true);
     }
-
-    if (count == 0)
-    {
-        std::cout << "\n-|                      (Khong tim thay thong tin sinh vien trung hop)                     |-";
-    }
-    count = 0;
     std::cout << "\n-|-----|----------|--------------|-----Ket qua gan dung-----|------------|-----------------|-";
     if (is_sort_by_gpa)
     {
-        for (Student& s : students)
-        {
-            if ((int)s.gpa  == (int)gpa_value)
-            {
-                count++;
-                _print_single_student(count,
-                    s.class_id,
-                    s.student_id,
-                    s.name,
-                    s.dob.day,
-                    s.dob.month,
-                    s.dob.year,
-                    s.gpa);
-            }
-        }
-        
+        _linear_search_number(gpa_value, false);
     }
     else
     {
-        int left = 0;
-        size_t right = students.size() - 1;
-        int mid = -1;
-
-        while (left <= right)
-        {
-            mid = left + (right - left) / 2;
-
-            if ((int)students[mid].gpa == (int)gpa_value)
-            {
-                if (mid <= 0)
-                {
-                    break;
-                }
-
-                // Find first index students who == search value
-                while (mid > 0 && (int)students[mid - 1].gpa == (int)gpa_value)
-                {
-                    mid--;
-                    
-                }
-                break;
-            }
-
-            else if (students[mid].gpa < gpa_value)
-            {
-                left = mid + 1;
-            }
-
-            else
-            {
-                right = mid - 1;
-            }
-        }
-
-        // If found result
-        if (left <= right)
-        {
-            while ((int)students[mid].gpa == (int)gpa_value)
-            {
-                count++;
-                
-                _print_single_student(count,
-                    students[mid].class_id,
-                    students[mid].student_id,
-                    students[mid].name,
-                    students[mid].dob.day,
-                    students[mid].dob.month,
-                    students[mid].dob.year,
-                    students[mid].gpa);
-                mid++;
-                if (mid >= students.size())
-                {
-                    break;
-                }
-
-            }
-        }
+        _binary_search_number(gpa_value, false);
     }
 
-    if (count == 0)
-    {
-        std::cout << "\n-|                          (Khong tim thay thong tin sinh vien)                          |-";
-    }
     std::cout << "\n-|-----|----------|--------------|--------------------------|------------|-----------------|-";
 }
 
-void _search_result_number(int count, const float gpa_value, bool is_exactly)
+void _linear_search_number(const float gpa_value, bool is_exactly)
 {
+    int count = 0;
     std::vector<Student> students;
     load_student_list(students);
     
@@ -1716,6 +1583,103 @@ void _search_result_number(int count, const float gpa_value, bool is_exactly)
                 s.gpa);
         }
     }
+
+    if (count == 0)
+    {
+        std::cout << "\n-|                      (Khong tim thay thong tin sinh vien trung hop)                     |-";
+    }
+}
+
+void _binary_search_number(const float gpa_value, const bool is_exactly)
+{
+    int count = 0;
+    std::vector<Student> students;
+    load_student_list(students);
+
+    int left = 0;
+    size_t right = students.size() - 1;
+    int mid = -1;
+    bool is_equal;
+    bool is_prev_equal;
+
+    while (left <= right)
+    {
+        mid = left + (right - left) / 2;
+        if (is_exactly)
+        {
+            is_equal = students[mid].gpa == gpa_value;
+        }
+        else
+        {
+            is_equal = (int)students[mid].gpa == (int)gpa_value;
+        }
+
+        if (is_equal)
+        {
+            break;
+        }
+        else if (students[mid].gpa < gpa_value)
+        {
+            left = mid + 1;
+        }
+        else
+        {
+            right = mid - 1;
+        }
+    }
+
+    // Find first index students who == search value
+    while (mid > 0)
+    {
+        if (is_exactly)
+        {
+            is_prev_equal = students[mid - 1].gpa == gpa_value;
+        }
+        else
+        {
+            is_prev_equal = (int)students[mid - 1].gpa == (int)gpa_value;
+        }
+
+        if (is_prev_equal == false)
+        {
+            break;
+        }
+        mid--;
+
+    }
+
+    // If found student 
+    if (left > right)
+    {
+        std::cout << "\n-|                      (Khong tim thay thong tin sinh vien trung hop)                     |-";
+        return;
+    }
+
+    do
+    {
+        count++;
+
+        _print_single_student(count,
+            students[mid].class_id,
+            students[mid].student_id,
+            students[mid].name,
+            students[mid].dob.day,
+            students[mid].dob.month,
+            students[mid].dob.year,
+            students[mid].gpa);
+        mid++;
+
+        if (is_exactly)
+        {
+            is_equal = students[mid].gpa == gpa_value;
+        }
+        else
+        {
+            is_equal = (int)students[mid].gpa == (int)gpa_value;
+        }
+
+    }
+    while (mid < students.size() && is_equal);
 }
 
 // Return True if d1 is before d2
