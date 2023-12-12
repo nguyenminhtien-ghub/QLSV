@@ -121,6 +121,7 @@ void _search_info(const char key);
 void _search_result(const std::string search_value, const char key);
 void _search_result(const int year_value, const int month_value = 0, const int day_value = 0);
 void _search_result(const float gpa_value);
+void _search_result_number(int count, const float gpa_value, const bool is_exactly = true);
 
 void statistics_student();
 void _statistics_quantity_by_class();
@@ -942,9 +943,9 @@ size_t _partition_student_list(std::vector<Student>& students, size_t low, size_
 {
     size_t i = low - 1;
 
+    bool is_value_lesser;
     for (size_t j = low; j < high; j++)
     {
-        bool is_value_lesser;
         if (key == STUDENT_KEY::CLASS_ID)
         {
             is_value_lesser = students[j].class_id < students[high].class_id;
@@ -1527,29 +1528,13 @@ void _search_result(const int year_value, const int month_value, const int day_v
 void _search_result(const float gpa_value)
 {
     int count = 0;
-    std::vector<Student> students;
-    load_student_list(students);
 
     std::cout << "\n-|-----|----------|--------------|----Ket qua chinh xac-----|------------|-----------------|-";
     // linear search if list not sorted by gpa
     const bool is_sort_by_gpa = sorted_key != 0b1'0'0'0'0;
     if (is_sort_by_gpa)
     {
-        for (Student& s : students)
-        {
-            if (s.gpa == gpa_value)
-            {
-                count++;
-                _print_single_student(count,
-                    s.class_id,
-                    s.student_id,
-                    s.name,
-                    s.dob.day,
-                    s.dob.month,
-                    s.dob.year,
-                    s.gpa);
-            }
-        }
+
     }
     else
     {
@@ -1701,6 +1686,37 @@ void _search_result(const float gpa_value)
     std::cout << "\n-|-----|----------|--------------|--------------------------|------------|-----------------|-";
 }
 
+void _search_result_number(int count, const float gpa_value, bool is_exactly)
+{
+    std::vector<Student> students;
+    load_student_list(students);
+    
+    for (Student& s : students)
+    {
+        bool is_equal;
+        if (is_exactly)
+        {
+            is_equal = s.gpa == gpa_value;
+        }
+        else
+        {
+            is_equal = (int)s.gpa == (int)gpa_value;
+        }
+
+        if (is_equal)
+        {
+            count++;
+            _print_single_student(count,
+                s.class_id,
+                s.student_id,
+                s.name,
+                s.dob.day,
+                s.dob.month,
+                s.dob.year,
+                s.gpa);
+        }
+    }
+}
 
 // Return True if d1 is before d2
 bool compare_date(const Date d1, const Date d2)
