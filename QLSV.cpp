@@ -108,8 +108,8 @@ void quicksort(const char key);
 void _quicksort(std::vector<Student>& students, int low, int high, const char key);
 int _partition_student_list(std::vector<Student>& students, int low, int high, const char key);
 void mergesort(const char key);
-void _mergesort(std::vector<Student>& students, int left, int right, const char key);
-void _merge(std::vector<Student>& students, int left, int middle, int right, const char key);
+void _mergesort(std::vector<Student>& students, std::vector<Student>& temp_list, int left, int right, const char key);
+void _merge(std::vector<Student>& students, std::vector<Student>& temp_list, int left, int middle, int right, const char key);
 bool compare_date(const Date d1, const Date d2);
 
 void search_students();
@@ -1024,33 +1024,46 @@ void mergesort(const char key)
     std::vector<Student> students;
 
     load_student_list(students);
+    std::vector<Student> temp_list{ students };
 
-    _mergesort(students, 0, students.size() - 1, key);
+    _mergesort(students, temp_list, 0, students.size(), key);
 
     save_student_list(students);
 }
 
 
-void _mergesort(std::vector<Student>& students, int left, int right, const char key)
+void _mergesort(std::vector<Student>& students, std::vector<Student>& temp_list, int left, int right, const char key)
 {
-    if (left < right)
+    if (right - left <= 1)
     {
-        // avoids overflow
-        int middle = left + (right - left) / 2;
-
-        _mergesort(students, left, middle, key);
-        _mergesort(students, middle + 1, right, key);
-
-        _merge(students, left, middle, right, key);
+        return;
     }
+
+    int middle = left + (right = left) / 2;
+    
 }
 
-void _merge(std::vector<Student>& students, int left, int middle, int right, const char key)
+void _merge(std::vector<Student>& students, std::vector<Student>& temp_list, int left, int middle, int right, const char key)
 {
-    int left_size = middle - left + 1;
-    int right_size = right - middle;
+    int i = left;
+    int j = middle;
 
-    std::vector<Student> left_list{};
+    for (int k = left; k < right; k++)
+    {
+        if (i < middle
+            && (j >= right || students[i].class_id <= students[j].class_id))
+        {
+            temp_list[k] = students[i];
+            i++;
+        }
+        else
+        {
+            temp_list[k] = students[j];
+            j++;
+        }
+    }
+
+    /*std::vector<Student> left_list{};
     std::vector<Student> right_list{};
 
     for (int i = 0; i < left_size; i++)
@@ -1161,7 +1174,7 @@ void _merge(std::vector<Student>& students, int left, int middle, int right, con
         students[k] = right_list[j];
         j++;
         k++;
-    }
+    }*/
 }
 
 void _search_result(const std::string search_value, const char key)
