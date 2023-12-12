@@ -108,8 +108,8 @@ void quicksort(const char key);
 void _quicksort(std::vector<Student>& students, int low, int high, const char key);
 int _partition_student_list(std::vector<Student>& students, int low, int high, const char key);
 void mergesort(const char key);
-void _mergesort(std::vector<Student>& students, std::vector<Student>& temp_list, int left, int right, const char key);
-void _merge(std::vector<Student>& students, std::vector<Student>& temp_list, int left, int middle, int right, const char key);
+void _mergesort(std::vector<Student>& B_list, std::vector<Student>& A_list, int left, int right, const char key);
+void _merge(std::vector<Student>& B_list, std::vector<Student>& A_list, int left, int middle, int right, const char key);
 bool compare_date(const Date d1, const Date d2);
 
 void search_students();
@@ -1032,149 +1032,40 @@ void mergesort(const char key)
 }
 
 
-void _mergesort(std::vector<Student>& students, std::vector<Student>& temp_list, int left, int right, const char key)
+void _mergesort(std::vector<Student>& B_list, std::vector<Student>& A_list, int left, int right, const char key)
 {
     if (right - left <= 1)
     {
         return;
     }
 
-    int middle = left + (right = left) / 2;
+    int middle = left + (right - left) / 2;
+    _mergesort(A_list, B_list, left, middle, key);
+    _mergesort(A_list, B_list, middle, right, key);
     
+    _merge(B_list, A_list, left, middle, right, key);
 }
 
-void _merge(std::vector<Student>& students, std::vector<Student>& temp_list, int left, int middle, int right, const char key)
+void _merge(std::vector<Student>& B_list, std::vector<Student>& A_list, int left, int middle, int right, const char key)
 {
     int i = left;
     int j = middle;
 
     for (int k = left; k < right; k++)
     {
+        if (key == STUDENT_KEY::CLASS_ID)
         if (i < middle
-            && (j >= right || students[i].class_id <= students[j].class_id))
+            && (j >= right || A_list[i].class_id <= A_list[j].class_id))
         {
-            temp_list[k] = students[i];
+            B_list[k] = A_list[i];
             i++;
         }
         else
         {
-            temp_list[k] = students[j];
+            B_list[k] = A_list[j];
             j++;
         }
     }
-
-    /*std::vector<Student> left_list{};
-    std::vector<Student> right_list{};
-
-    for (int i = 0; i < left_size; i++)
-    {
-        left_list.push_back(students[left + i]);
-    }
-
-    for (int i = 0; i < right_size; i++)
-    {
-        right_list.push_back(students[middle + i + 1]);
-    }
-
-    int i = 0;
-    int j = 0;
-    int k = left;
-    while (i < left_size
-        && j < right_size)
-    {
-        if (key == STUDENT_KEY::CLASS_ID)
-        {
-            if (left_list[i].class_id <= right_list[j].class_id)
-            {
-                students[k] = left_list[i];
-                i++;
-            }
-            else
-            {
-                students[k] = right_list[j];
-                j++;
-            }
-            k++;
-            continue;
-        }
-
-        if (key == STUDENT_KEY::ID)
-        {
-            if (left_list[i].student_id <= right_list[j].student_id)
-            {
-                students[k] = left_list[i];
-                i++;
-            }
-            else
-            {
-                students[k] = right_list[j];
-                j++;
-            }
-            k++;
-            continue;
-        }
-
-        if (key == STUDENT_KEY::NAME)
-        {
-            if (left_list[i].name <= right_list[j].name)
-            {
-                students[k] = left_list[i];
-                i++;
-            }
-            else
-            {
-                students[k] = right_list[j];
-                j++;
-            }
-            k++;
-            continue;
-        }
-        if (key == STUDENT_KEY::DOB)
-        {
-            if (compare_date(right_list[j].dob, left_list[i].dob) == false)
-            {
-                students[k] = left_list[i];
-                i++;
-            }
-            else
-            {
-                students[k] = right_list[j];
-                j++;
-            }
-            k++;
-            continue;
-        }
-        if (key == STUDENT_KEY::GPA)
-        {
-            if (left_list[i].gpa <= right_list[j].gpa)
-            {
-                students[k] = left_list[i];
-                i++;
-            }
-            else
-            {
-                students[k] = right_list[j];
-                j++;
-            }
-            k++;
-            continue;
-        }
-
-    }
-
-    while (i < left_size)
-    {
-        students[k] = left_list[i];
-        i++;
-        k++;
-    }
-
-    while (j < right_size)
-    {
-        students[k] = right_list[j];
-        j++;
-        k++;
-    }*/
 }
 
 void _search_result(const std::string search_value, const char key)
