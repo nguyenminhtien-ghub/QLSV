@@ -103,10 +103,12 @@ void _print_single_student(const int i, const std::string class_id, const std::s
 void sort_students();
 void set_sorted_key(std::bitset<5> keys, const char key_choice);
 void selection_sort(const char key);
+void _selection_by_key(std::vector<Student>& students, int& min_index, int& j, const char key);
 void bubble_sort(const char key);
+void _bubble_by_key(std::vector<Student>& students, int& j, const char key);
 void quicksort(const char key);
 void _quicksort(std::vector<Student>& students, size_t low, size_t high, const char key);
-size_t _partition_student_list(std::vector<Student>& students, int low, int high, const char key);
+size_t _partition_student_list(std::vector<Student>& students, size_t low, size_t high, const char key);
 void mergesort(const char key);
 void _mergesort(std::vector<Student>& B_list, std::vector<Student>& A_list, size_t left, size_t right, const char key);
 void _merge(std::vector<Student>& B_list, std::vector<Student>& A_list, int left, int middle, int right, const char key);
@@ -794,50 +796,15 @@ void selection_sort(const char key)
         int min_index = i;
         for (int j = i + 1;  j < total_student; j++)
         {
-            if (key == STUDENT_KEY::CLASS_ID)
-            {
-                if (students[j].class_id < students[min_index].class_id)
-                {
-                    min_index = j;
-                }
-                continue;
-            }
+            _selection_by_key(students, min_index, j, key);
 
-            if (key == STUDENT_KEY::ID)
+            /*
+            if (students[j].class_id < students[min_index].class_id)
             {
-                if (students[j].student_id < students[min_index].student_id)
-                {
-                    min_index = j;
-                }
-                continue;
+                min_index = j;
             }
-
-            if (key == STUDENT_KEY::NAME)
-            {
-                if (students[j].name < students[min_index].name)
-                {
-                    min_index = j;
-                }
-                continue;
-            }
-
-            if (key == STUDENT_KEY::DOB)
-            {
-                if (compare_date(students[j].dob, students[min_index].dob))
-                {
-                    min_index = j;
-                }
-                continue;
-            }
-            
-            if (key == STUDENT_KEY::GPA)
-            {
-                if (students[j].gpa < students[min_index].gpa)
-                {
-                    min_index = j;
-                }
-                continue;
-            }
+            continue;
+            */
         }
 
         std::swap(students[i], students[min_index]);
@@ -845,6 +812,54 @@ void selection_sort(const char key)
 
     save_student_list(students);
 
+}
+
+void _selection_by_key(std::vector<Student>& students, int& min_index, int& j, const char key)
+{
+    if (key == STUDENT_KEY::CLASS_ID)
+    {
+        if (students[j].class_id < students[min_index].class_id)
+        {
+            min_index = j;
+        }
+        return;
+    }
+
+    if (key == STUDENT_KEY::ID)
+    {
+        if (students[j].student_id < students[min_index].student_id)
+        {
+            min_index = j;
+        }
+        return;
+    }
+
+    if (key == STUDENT_KEY::NAME)
+    {
+        if (students[j].name < students[min_index].name)
+        {
+            min_index = j;
+        }
+        return;
+    }
+
+    if (key == STUDENT_KEY::DOB)
+    {
+        if (compare_date(students[j].dob, students[min_index].dob))
+        {
+            min_index = j;
+        }
+        return;
+    }
+
+    if (key == STUDENT_KEY::GPA)
+    {
+        if (students[j].gpa < students[min_index].gpa)
+        {
+            min_index = j;
+        }
+        return;
+    }
 }
 
 void bubble_sort(const char key)
@@ -858,51 +873,55 @@ void bubble_sort(const char key)
     {
         for (int j = 0; j < total_student - i - 1; j++)
         {
-            if (key == STUDENT_KEY::CLASS_ID)
-            {
-                if (students[j].class_id > students[j + 1].class_id)
-                {
-                    std::swap(students[j], students[j + 1]);
-                }
-                continue;
-            }
-            if (key == STUDENT_KEY::ID)
-            {
-                if (students[j].student_id > students[j + 1].student_id)
-                {
-                    std::swap(students[j], students[j + 1]);
-                }
-                continue;
-            }
-            if (key == STUDENT_KEY::NAME)
-            {
-                if (students[j].name > students[j + 1].name)
-                {
-                    std::swap(students[j], students[j + 1]);
-                }
-                continue;
-            }
-            if (key == STUDENT_KEY::DOB)
-            {
-                if (compare_date(students[j + 1].dob, students[j].dob))
-                {
-                    std::swap(students[j], students[j + 1]);
-                }
-                continue;
-            }
-            if (key == STUDENT_KEY::GPA)
-            {
-                if (students[j].gpa > students[j + 1].gpa)
-                {
-                    std::swap(students[j], students[j + 1]);
-                }
-                continue;
-            }
-
+            _bubble_by_key(students, j, key);
         }
     }
     
     save_student_list(students);
+}
+
+void _bubble_by_key(std::vector<Student>& students, int& j, const char key)
+{
+    if (key == STUDENT_KEY::CLASS_ID)
+    {
+        if (students[j].class_id > students[j + 1].class_id)
+        {
+            std::swap(students[j], students[j + 1]);
+        }
+        return;
+    }
+    if (key == STUDENT_KEY::ID)
+    {
+        if (students[j].student_id > students[j + 1].student_id)
+        {
+            std::swap(students[j], students[j + 1]);
+        }
+        return;
+    }
+    if (key == STUDENT_KEY::NAME)
+    {
+        if (students[j].name > students[j + 1].name)
+        {
+            std::swap(students[j], students[j + 1]);
+        }
+        return;
+    }
+    if (key == STUDENT_KEY::DOB)
+    {
+        if (compare_date(students[j + 1].dob, students[j].dob))
+        {
+            std::swap(students[j], students[j + 1]);
+        }
+        return;
+    }
+    if (key == STUDENT_KEY::GPA)
+    {
+        if (students[j].gpa > students[j + 1].gpa)
+        {
+            std::swap(students[j], students[j + 1]);
+        }
+        return;
+    }
 }
 
 void quicksort(const char key)
@@ -932,91 +951,44 @@ void _quicksort(std::vector<Student>& students, size_t low, size_t high, const c
 
 
 // Function to partition the list for quicksort
-size_t _partition_student_list(std::vector<Student>& students, int low, int high, const char key)
+size_t _partition_student_list(std::vector<Student>& students, size_t low, size_t high, const char key)
 {
     size_t i = low - 1;
 
-    if (key == STUDENT_KEY::CLASS_ID)
+    for (size_t j = low; j < high; j++)
     {
-        std::string pivot = students[high].class_id;
-
-        for (int j = low; j < high; j++)
+        bool is_value_lesser;
+        if (key == STUDENT_KEY::CLASS_ID)
         {
-            if (students[j].class_id < pivot)
-            {
-                i++;
-                std::swap(students[i], students[j]);
-            }
+            is_value_lesser = students[j].class_id < students[high].class_id;
+        }
+        else if (key == STUDENT_KEY::ID)
+        {
+            is_value_lesser = students[j].student_id < students[high].student_id;
+        }
+        else if (key == STUDENT_KEY::NAME)
+        {
+            is_value_lesser = students[j].name < students[high].name;
+        }
+        else if (key == STUDENT_KEY::DOB)
+        {
+            is_value_lesser = compare_date(students[j].dob, students[high].dob);
+        }
+        else
+        {
+            is_value_lesser = students[j].gpa < students[high].gpa;
         }
 
-        std::swap(students[i + 1], students[high]);
-        return i + 1;
-    }
-    else if (key == STUDENT_KEY::ID)
-    {
-        std::string pivot = students[high].student_id;
-
-        for (int j = low; j < high; j++)
+        if (is_value_lesser)
         {
-            if (students[j].student_id < pivot)
-            {
-                i++;
-                std::swap(students[i], students[j]);
-            }
+            i++;
+            std::swap(students[i], students[j]);
         }
-
-        std::swap(students[i + 1], students[high]);
-        return i + 1;
-
     }
-    else if (key == STUDENT_KEY::NAME)
-    {
-        std::string pivot = students[high].name;
 
-        for (int j = low; j < high; j++)
-        {
-            if (students[j].name < pivot)
-            {
-                i++;
-                std::swap(students[i], students[j]);
-            }
-        }
-
-        std::swap(students[i + 1], students[high]);
-        return i + 1;
-    }
-    else if (key == STUDENT_KEY::DOB)
-    {
-        Date pivot = students[high].dob;
-
-        for (int j = low; j < high; j++)
-        {
-            if (compare_date(students[j].dob, pivot))
-            {
-                i++;
-                std::swap(students[i], students[j]);
-            }
-        }
-
-        std::swap(students[i + 1], students[high]);
-        return i + 1;
-    }
-    else
-    {
-        float pivot = students[high].gpa;
-
-        for (int j = low; j < high; j++)
-        {
-            if (students[j].gpa < pivot)
-            {
-                i++;
-                std::swap(students[i], students[j]);
-            }
-        }
-
-        std::swap(students[i + 1], students[high]);
-        return i + 1;
-    }
+    std::swap(students[i + 1], students[high]);
+    return i + 1;
+   
 }
 
 
@@ -1055,7 +1027,9 @@ void _merge(std::vector<Student>& B_list, std::vector<Student>& A_list, int left
     for (int k = left; k < right; k++)
     {
         _merge_list_by_key(key, A_list, i, j, middle, right, B_list, k);
-        /*if (i < middle
+
+        /*
+        if (i < middle
             && (j >= right || A_list[i].class_id <= A_list[j].class_id))
         {
             B_list[k] = A_list[i];
@@ -1094,8 +1068,7 @@ void _merge_list_by_key(const char& key, std::vector<Student>& A_list, int& i, i
         is_lesser_or_equal_right_head = j >= right || A_list[i].gpa <= A_list[j].gpa;
     }
 
-    if (i < middle
-        && (is_lesser_or_equal_right_head))
+    if (i < middle && is_lesser_or_equal_right_head)
     {
         B_list[k] = A_list[i];
         i++;
