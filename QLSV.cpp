@@ -1,10 +1,14 @@
 #include <conio.h>
 #include <fstream>
 #include <iostream>
+#include <cctype>
 #include <iomanip>
+#include <algorithm>
 #include <string>
+#include <sstream>
 #include <vector>
 #include <array>
+#include <stack>
 #include <bitset>
 
 // 00001: class_id is sorted, 00010: student_id is sorted, 00100: name, 01000: date of birth, 10000: gpa
@@ -113,6 +117,8 @@ void mergesort(const char key);
 void _mergesort(std::vector<Student>& B_list, std::vector<Student>& A_list, size_t left, size_t right, const char key);
 void _merge(std::vector<Student>& B_list, std::vector<Student>& A_list, int left, int middle, int right, const char key);
 void _merge_list_by_key(const char& key, std::vector<Student>& A_list, int& i, int& j, int middle, int right, std::vector<Student>& B_list, int k);
+bool compare_name_fn(const std::string name1, const std::string name2);
+std::string str_to_lower(const std::string input);
 bool compare_date(const Date d1, const Date d2);
 bool compare_date(const int year_value1, const int year_value2, const int month_value1 = 0, const int month_value2 = 0, const int day_value1 = 0, const int day_value2 = 0);
 
@@ -690,6 +696,16 @@ std::string clear_duplicate_space(std::string input)
     return input;
 }
 
+std::string str_to_lower(const std::string input)
+{
+    std::string lower_case = "";
+    for (int i = 0; i < input.length(); i++)
+    {
+        lower_case += std::tolower(input[i]);
+    }
+    return lower_case;
+}
+
 void save_student_list(std::vector<Student>& students)
 {
     std::ofstream data_file("student.dat", std::ios::binary);
@@ -828,7 +844,7 @@ void _selection_by_key(std::vector<Student>& students, int& min_index, int& j, c
 
     if (key == STUDENT_KEY::NAME)
     {
-        if (students[j].name < students[min_index].name)
+        if(compare_name_fn(students[j].name, students[min_index].name))
         {
             min_index = j;
         }
@@ -892,7 +908,7 @@ void _bubble_by_key(std::vector<Student>& students, int& j, const char key)
     }
     if (key == STUDENT_KEY::NAME)
     {
-        if (students[j].name > students[j + 1].name)
+        if (compare_name_fn(students[j + 1].name, students[j].name))
         {
             std::swap(students[j], students[j + 1]);
         }
@@ -960,7 +976,7 @@ size_t _partition_student_list(std::vector<Student>& students, size_t low, size_
         }
         else if (key == STUDENT_KEY::NAME)
         {
-            is_value_lesser = students[j].name < students[high].name;
+            is_value_lesser = compare_name_fn(students[j].name, students[high].name);
         }
         else if (key == STUDENT_KEY::DOB)
         {
@@ -1049,7 +1065,8 @@ void _merge_list_by_key(const char& key, std::vector<Student>& A_list, int& i, i
     }
     else if (key == STUDENT_KEY::NAME)
     {
-        is_lesser_or_equal_right_head = j >= right || A_list[i].name <= A_list[j].name;
+        //is_lesser_or_equal_right_head = j >= right || A_list[i].name <= A_list[j].name;
+        is_lesser_or_equal_right_head = j >= right || (compare_name_fn(A_list[j].name, A_list[i].name) == false);
     }
     else if (key == STUDENT_KEY::DOB)
     {
@@ -1072,6 +1089,7 @@ void _merge_list_by_key(const char& key, std::vector<Student>& A_list, int& i, i
     }
 }
 
+// Search id or name
 void _search_result(const std::string search_value, const char key)
 {
     bool is_sort_by_key = (key == STUDENT_KEY::CLASS_ID && sorted_key == 0b0'0'0'0'1)
@@ -1110,11 +1128,12 @@ void _linear_search_id_or_name(const std::string search_value, const bool is_exa
         {
             if (is_exactly)
             {
-                is_find = s.class_id == search_value;
+                is_find = str_to_lower(s.class_id) == str_to_lower(search_value);
             }
             else
             {
-                is_find = s.class_id.find(search_value) != std::string::npos;
+                std::string str_lower = str_to_lower(s.class_id);
+                is_find = str_lower.find(str_to_lower(search_value)) != std::string::npos;
             }
         }
         else if (key == STUDENT_KEY::ID)
@@ -1141,11 +1160,12 @@ void _linear_search_id_or_name(const std::string search_value, const bool is_exa
         {
             if (is_exactly)
             {
-                is_find = s.name == search_value;
+                is_find = str_to_lower(s.name) == str_to_lower(search_value);
             }
             else
             {
-                is_find = s.name.find(search_value) != std::string::npos;
+                std::string str_lower = str_to_lower(s.name);
+                is_find = str_lower.find(str_to_lower(search_value)) != std::string::npos;
             }
         }
 
@@ -1188,13 +1208,16 @@ void _binary_search_class_or_name(const std::string search_value, const char key
         mid = left + (right - left) / 2;
         if (key == STUDENT_KEY::CLASS_ID)
         {
-            is_equal = students[mid].class_id == search_value;
-            is_lesser = students[mid].class_id < search_value;
+            is_equal = str_to_lower(students[mid].class_id) == str_to_lower(search_value);
+            is_lesser = str_to_lower(students[mid].class_id) < str_to_lower(search_value);
         }
         else
         {
-            is_equal = students[mid].name == search_value;
-            is_lesser = students[mid].name < search_value;
+            is_equal = str_to_lower(students[mid].name) == str_to_lower(search_value);
+            //is_lesser = students[mid].name < search_value;
+            is_lesser = compare_name_fn(
+                str_to_lower(students[mid].name), 
+                str_to_lower(search_value));
         }
 
         if (is_equal)
@@ -1223,11 +1246,11 @@ void _binary_search_class_or_name(const std::string search_value, const char key
     {
         if (key == STUDENT_KEY::CLASS_ID)
         {
-            is_prev_equal = students[mid - 1].class_id == search_value;
+            is_prev_equal = str_to_lower(students[mid - 1].class_id) == str_to_lower(search_value);
         }
         else
         {
-            is_prev_equal = students[mid - 1].name == search_value;
+            is_prev_equal = str_to_lower(students[mid - 1].name) == str_to_lower(search_value);
         }
         
         if (is_prev_equal == false)
@@ -1261,11 +1284,11 @@ void _binary_search_class_or_name(const std::string search_value, const char key
             
         if (key == STUDENT_KEY::CLASS_ID)
         {
-            is_equal = students[mid].class_id == search_value;
+            is_equal = str_to_lower(students[mid].class_id) == str_to_lower(search_value);
         }
         else
         {
-            is_equal = students[mid].name == search_value;
+            is_equal = str_to_lower(students[mid].name) == str_to_lower(search_value);
 
         }
     } while (mid < students.size() && is_equal);
@@ -1623,6 +1646,42 @@ void _binary_search_number(const float gpa_value, const bool is_exactly)
 
     }
     while (mid < students.size() && is_equal);
+}
+
+bool compare_name_fn(const std::string name1, const std::string name2)
+{
+    std::stack<std::string> words1;
+    std::stack<std::string> words2;
+    std::string word;
+    std::string n1 = str_to_lower(name1);
+    std::string n2 = str_to_lower(name2);
+    std::istringstream iss(n1);
+
+    while (iss)
+    {
+        iss >> word;
+        words1.push(word);
+    }
+    
+    iss = std::istringstream(n2);
+
+    while (iss)
+    {
+        iss >> word;
+        words2.push(word);
+    }
+
+    const int min_word = std::min(words1.size(), words2.size());
+    for (int i = 0; i < min_word; i++)
+    {
+        if (words1.top() != words2.top())
+        {
+            return words1.top() < words2.top();
+        }
+        words1.pop();
+        words2.pop();
+    }
+    return false;
 }
 
 // Return True if d1 is before d2
