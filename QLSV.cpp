@@ -16,12 +16,22 @@
 // 00001: class_id is sorted, 00010: student_id is sorted, 00100: name, 01000: date of birth, 10000: gpa
 std::bitset<5> sorted_key{ 0b0'0'0'0'0 };
 
-enum STUDENT_KEY {
+enum STUDENT_KEY
+{
     CLASS_ID = '1',
     ID = '2',
     NAME = '3',
     DOB = '4',
     GPA = '5'
+};
+
+enum STUDENT_RANK
+{
+    EXCELLENT = 0,
+    GREAT,
+    GOOD,
+    AVERAGE,
+    FAIL,
 };
 
 struct Date
@@ -139,8 +149,9 @@ void _binary_search_number(const float gpa_value, const bool is_exactly = true);
 
 void statistics_student();
 std::map<std::string, std::array<int, 5>> _load_class_rank(std::vector<Student> & students);
-void _statistics_quantity_by_class(const std::map<std::string, std::array<int, 5>> &class_ranks);
+void _statistics_quantity_per_class(const std::map<std::string, std::array<int, 5>> &class_ranks);
 void _statistics_rank_students(const std::map<std::string, std::array<int, 5>>& class_ranks);
+int _rank_student(const float gpa);
 
 
 int main()
@@ -517,7 +528,7 @@ void statistics_student()
     if (user_choice == '1')
     {
         std::cout << user_choice;
-        _statistics_quantity_by_class(class_ranks);
+        _statistics_quantity_per_class(class_ranks);
         return;
     }
 
@@ -530,7 +541,7 @@ void statistics_student()
     }
 }
 
-void _statistics_quantity_by_class(const std::map<std::string, std::array<int, 5>>& class_ranks)
+void _statistics_quantity_per_class(const std::map<std::string, std::array<int, 5>>& class_ranks)
 {
     char return_to_main;
 
@@ -563,19 +574,21 @@ void _statistics_quantity_by_class(const std::map<std::string, std::array<int, 5
 void _statistics_rank_students(const std::map<std::string, std::array<int, 5>>& class_ranks)
 {
     char return_to_main;
+    std::array<int, 5> total_per_rank{ 0, 0, 0, 0, 0 };
+    int count = 0;
     std::cout << "\n\n                           * Thong ke ket qua hoc tap *  ";
     std::cout << "\n    -|--------|------------|------------|------------|------------|------------|-";
     std::cout << "\n     |        |  xuat sac  |    gioi    |    kha     | trung binh |    yeu     |";
     std::cout << "\n     | ma lop |------------|------------|------------|------------|------------|";
     std::cout << "\n     |        |  SL | (%)  |  SL | (%)  |  SL | (%)  |  SL | (%)  |  SL | (%)  |";
-    std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
-    std::cout << "\n     |  AAA17 |   5 |    8 |  11 |   18 |  24 |   40 |  17 |   28 |   3 |    5 |";
-    std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
-    std::cout << "\n     |  AAB17 |   7 |    9 |   9 |   12 |  30 |   41 |  21 |   28 |   7 |    9 |";
-    std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
-    std::cout << "\n     |  AAC17 |   3 |    5 |  12 |   20 |  21 |   35 |  19 |   32 |   5 |    8 |";
-    std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
-    std::cout << "\n     |  ABB17 |   6 |    8 |  15 |   19 |  29 |   29 |  22 |   29 |   5 |    6 |";
+    //std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
+    //std::cout << "\n     |  AAA17 |   5 |    8 |  11 |   18 |  24 |   40 |  17 |   28 |   3 |    5 |";
+    //std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
+    //std::cout << "\n     |  AAB17 |   7 |    9 |   9 |   12 |  30 |   41 |  21 |   28 |   7 |    9 |";
+    //std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
+    //std::cout << "\n     |  AAC17 |   3 |    5 |  12 |   20 |  21 |   35 |  19 |   32 |   5 |    8 |";
+    //std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
+    //std::cout << "\n     |  ABB17 |   6 |    8 |  15 |   19 |  29 |   29 |  22 |   29 |   5 |    6 |";
     std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
     std::cout << "\n     |  TONG  |  21 |    8 |  47 |   17 | 104 |   38 |  79 |   29 |  20 |    7 |";
     std::cout << "\n    -|-------------------------------------------------------------------------|-";
@@ -1677,54 +1690,35 @@ std::map<std::string, std::array<int, 5>> _load_class_rank(std::vector<Student>&
     {
         if (class_ranks.count(s.class_id) > 0)
         {
-            if (s.gpa >= 8.5f)
-            {
-                class_ranks[s.class_id][0]++;
-                continue;
-            }
-            if (s.gpa >= 7.0f)
-            {
-                class_ranks[s.class_id][1]++;
-                continue;
-            }
-            if (s.gpa >= 6.0f)
-            {
-                class_ranks[s.class_id][2]++;
-                continue;
-            }
-            if (s.gpa >= 5.0f)
-            {
-                class_ranks[s.class_id][3]++;
-                continue;
-            }
-            class_ranks[s.class_id][4]++;
+            class_ranks[s.class_id][_rank_student(s.gpa)]++;
             continue;
         }
 
-        if (s.gpa >= 8.5f)
-        {
-            class_ranks[s.class_id][0] = 1;
-            continue;
-        }
-        if (s.gpa >= 7.0f)
-        {
-            class_ranks[s.class_id][1] = 1;
-            continue;
-        }
-        if (s.gpa >= 6.0f)
-        {
-            class_ranks[s.class_id][2] = 1;
-            continue;
-        }
-        if (s.gpa >= 5.0f)
-        {
-            class_ranks[s.class_id][3] = 1;
-            continue;
-        }
-        class_ranks[s.class_id][4] = 1;
+        class_ranks[s.class_id][_rank_student(s.gpa)] = 1;
     }
 
     return class_ranks;
+}
+
+int _rank_student(const float gpa)
+{
+    if (gpa >= 8.5f)
+    {
+        return STUDENT_RANK::EXCELLENT;
+    }
+    if (gpa >= 7.0f)
+    {
+        return STUDENT_RANK::GREAT;
+    }
+    if (gpa >= 6.0f)
+    {
+        return STUDENT_RANK::GOOD;
+    }
+    if (gpa >= 5.0f)
+    {
+        return STUDENT_RANK::AVERAGE;
+    }
+    return STUDENT_RANK::FAIL;
 }
 
 bool compare_name_fn(const std::string name1, const std::string name2)
