@@ -4,11 +4,13 @@
 #include <cctype>
 #include <iomanip>
 #include <algorithm>
+#include <numeric>
 #include <string>
 #include <sstream>
 #include <vector>
 #include <array>
 #include <stack>
+#include <map>
 #include <bitset>
 
 // 00001: class_id is sorted, 00010: student_id is sorted, 00100: name, 01000: date of birth, 10000: gpa
@@ -35,6 +37,8 @@ struct Student
     std::string student_id;
     std::string name;
     Date dob;
+
+    // 10.0 - 8.5 excellent | 8.4 - 7.0 great | 6.9 - 6.0 good | 5.9 - 5.0 - average | 4.9 - 0.0 fail
     float gpa;
 
     void serialize(std::ostream& os) const
@@ -134,8 +138,9 @@ void _linear_search_number(const float gpa_value, const bool is_exactly = true);
 void _binary_search_number(const float gpa_value, const bool is_exactly = true);
 
 void statistics_student();
-void _statistics_quantity_by_class();
-void _statistics_rank_students();
+std::map<std::string, std::array<int, 5>> _load_class_rank(std::vector<Student> & students);
+void _statistics_quantity_by_class(const std::map<std::string, std::array<int, 5>> &class_ranks);
+void _statistics_rank_students(const std::map<std::string, std::array<int, 5>>& class_ranks);
 
 
 int main()
@@ -500,6 +505,8 @@ void _search_info(const char key)
 void statistics_student()
 {
     char user_choice;
+    std::vector<Student> students;
+    std::map<std::string, std::array<int, 5>> class_ranks = _load_class_rank(students);
 
     std::cout << "\n*** MENU 5 | Thong ke thong tin ***";
     std::cout << "\n\n(1) - Thong ke so luong sinh vien theo lop";
@@ -510,38 +517,50 @@ void statistics_student()
     if (user_choice == '1')
     {
         std::cout << user_choice;
-        _statistics_quantity_by_class();
+        _statistics_quantity_by_class(class_ranks);
         return;
     }
 
     if (user_choice == '2')
     {
         std::cout << user_choice;
-        _statistics_rank_students();
+        _statistics_rank_students(class_ranks);
 
         return;
     }
 }
 
-void _statistics_quantity_by_class()
+void _statistics_quantity_by_class(const std::map<std::string, std::array<int, 5>>& class_ranks)
 {
     char return_to_main;
+
+    int count = 0;
+    int total = 0;
     std::cout << "\n\n  * Thong ke so luong sinh vien theo lop *  ";
     std::cout << "\n    -|--------|--------------------|-";
     std::cout << "\n     | ma lop | so luong sinh vien |";
     std::cout << "\n    -|--------|--------------------|-";
-    std::cout << "\n     |  AAA17 |                 60 |";
-    std::cout << "\n     |  AAB17 |                 74 |";
-    std::cout << "\n     |  AAC17 |                 60 |";
-    std::cout << "\n     |  ABB17 |                 77 |";
+    for (std::pair<std::string, std::array<int, 5>> class_name : class_ranks)
+    {
+        count = std::accumulate(class_name.second.begin(), class_name.second.end(), 0);
+        total += count;
+        std::cout << "\n     |" << std::setw(7) << class_name.first << " |";
+        std::cout << std::setw(19) << count;
+        std::cout << " |";
+    }
+    //std::cout << "\n     |  AAA17 |                 60 |";
+    //std::cout << "\n     |  AAB17 |                 74 |";
+    //std::cout << "\n     |  AAC17 |                 60 |";
+    //std::cout << "\n     |  ABB17 |                 77 |";
     std::cout << "\n    -|--------|--------------------|-";
-    std::cout << "\n    -|  TONG  |                271 |-";
+    std::cout << "\n    -|  TONG  |";
+    std::cout << std::setw(19) << total << " |";
     std::cout << "\n    -|--------|--------------------|-";
     std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
     return_to_main = _getch();
 }
 
-void _statistics_rank_students()
+void _statistics_rank_students(const std::map<std::string, std::array<int, 5>>& class_ranks)
 {
     char return_to_main;
     std::cout << "\n\n                           * Thong ke ket qua hoc tap *  ";
@@ -1646,6 +1665,66 @@ void _binary_search_number(const float gpa_value, const bool is_exactly)
 
     }
     while (mid < students.size() && is_equal);
+}
+
+std::map<std::string, std::array<int, 5>> _load_class_rank(std::vector<Student>& students)
+{
+    load_student_list(students);
+
+    std::map<std::string, std::array<int, 5>> class_ranks;
+
+    for (Student& s : students)
+    {
+        if (class_ranks.count(s.class_id) > 0)
+        {
+            if (s.gpa >= 8.5f)
+            {
+                class_ranks[s.class_id][0]++;
+                continue;
+            }
+            if (s.gpa >= 7.0f)
+            {
+                class_ranks[s.class_id][1]++;
+                continue;
+            }
+            if (s.gpa >= 6.0f)
+            {
+                class_ranks[s.class_id][2]++;
+                continue;
+            }
+            if (s.gpa >= 5.0f)
+            {
+                class_ranks[s.class_id][3]++;
+                continue;
+            }
+            class_ranks[s.class_id][4]++;
+            continue;
+        }
+
+        if (s.gpa >= 8.5f)
+        {
+            class_ranks[s.class_id][0] = 1;
+            continue;
+        }
+        if (s.gpa >= 7.0f)
+        {
+            class_ranks[s.class_id][1] = 1;
+            continue;
+        }
+        if (s.gpa >= 6.0f)
+        {
+            class_ranks[s.class_id][2] = 1;
+            continue;
+        }
+        if (s.gpa >= 5.0f)
+        {
+            class_ranks[s.class_id][3] = 1;
+            continue;
+        }
+        class_ranks[s.class_id][4] = 1;
+    }
+
+    return class_ranks;
 }
 
 bool compare_name_fn(const std::string name1, const std::string name2)
