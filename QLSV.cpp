@@ -580,8 +580,19 @@ void _statistics_rank_students(const std::map<std::string, std::array<int, 5>>& 
     std::cout << "\n    -|--------|------------|------------|------------|------------|------------|-";
     std::cout << "\n     |        |  xuat sac  |    gioi    |    kha     | trung binh |    yeu     |";
     std::cout << "\n     | ma lop |------------|------------|------------|------------|------------|";
-    std::cout << "\n     |        |  SL | (%)  |  SL | (%)  |  SL | (%)  |  SL | (%)  |  SL | (%)  |";
-    //std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
+    std::cout << "\n     |        |  SL |  (%) |  SL |  (%) |  SL |  (%) |  SL |  (%) |  SL |  (%) |";
+    for (std::pair<std::string, std::array<int, 5>> class_name : class_ranks)
+    {
+        std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
+        std::cout << "\n     | " << std::setw(6) << class_name.first << " |";
+        count = std::accumulate(class_name.second.begin(), class_name.second.end(), 0);
+        for (int i = 0; i < 5; i++)
+        {
+            std::cout << " " << std::setw(3) << class_name.second[i];
+            std::cout << " | " << std::setw(4) << 100 * class_name.second[i] / count << " |";
+            total_per_rank[i] += class_name.second[i];
+        }
+    }
     //std::cout << "\n     |  AAA17 |   5 |    8 |  11 |   18 |  24 |   40 |  17 |   28 |   3 |    5 |";
     //std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
     //std::cout << "\n     |  AAB17 |   7 |    9 |   9 |   12 |  30 |   41 |  21 |   28 |   7 |    9 |";
@@ -590,7 +601,14 @@ void _statistics_rank_students(const std::map<std::string, std::array<int, 5>>& 
     //std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
     //std::cout << "\n     |  ABB17 |   6 |    8 |  15 |   19 |  29 |   29 |  22 |   29 |   5 |    6 |";
     std::cout << "\n    -|--------|-----|------|-----|------|-----|------|-----|------|-----|------|-";
-    std::cout << "\n     |  TONG  |  21 |    8 |  47 |   17 | 104 |   38 |  79 |   29 |  20 |    7 |";
+    std::cout << "\n    -|  TONG  |";
+    count = std::accumulate(total_per_rank.begin(), total_per_rank.end(), 0);
+    for (int i : total_per_rank)
+    {
+        std::cout << " " << std::setw(3) << i;
+        std::cout << " | " << std::setw(4) << 100 * i / count << " |";
+    }
+    //std::cout << "\n     |  TONG  |  21 |    8 |  47 |   17 | 104 |   38 |  79 |   29 |  20 |    7 |";
     std::cout << "\n    -|-------------------------------------------------------------------------|-";
 
     std::cout << "\n\n(Nhap phim bat ki de QUAY VE Menu)";
@@ -1754,7 +1772,7 @@ bool compare_name_fn(const std::string name1, const std::string name2)
         words1.pop();
         words2.pop();
     }
-    return false;
+    return n1.size() < n2.size();
 }
 
 // Return True if d1 is before d2
