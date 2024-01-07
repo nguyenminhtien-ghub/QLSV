@@ -1272,11 +1272,7 @@ void _binary_search_class_or_name(const std::string search_value, const char key
 
         if (is_equal)
         {
-            if (mid <= 0)
-            {
-                break;
-            }
-
+            break;
             
         }
 
